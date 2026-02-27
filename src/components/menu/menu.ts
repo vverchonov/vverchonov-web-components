@@ -83,6 +83,8 @@ export class Menu extends LitElement {
   @state() private _hoverExpanded = false
   @state() private _bottomSlotPopulated = false
 
+  private _wasCollapsed = true
+
   private get _isCollapsed() {
     return this.collapsed && !this._hoverExpanded
   }
@@ -101,7 +103,8 @@ export class Menu extends LitElement {
 
   override updated() {
     this.classList.toggle('is-collapsed', this._isCollapsed)
-    if (!this._isCollapsed && this.activeValue != null) {
+    const justExpanded = this._wasCollapsed && !this._isCollapsed
+    if (justExpanded && this.activeValue != null) {
       const path =
         this._getPathToActiveValue(this.items, this.activeValue, 'm') ??
         this._getPathToActiveValue(this.footerItems, this.activeValue, 'f') ??
@@ -112,11 +115,15 @@ export class Menu extends LitElement {
         for (let i = 2; i < parts.length; i++) {
           required.add(parts.slice(0, i).join('-'))
         }
-        if (required.size > 0 && [...required].some(p => !this._openPaths.has(p))) {
-          this._openPaths = new Set([...this._openPaths, ...required])
+        if (required.size > 0) {
+          const toAdd = required
+          queueMicrotask(() => {
+            this._openPaths = new Set([...this._openPaths, ...toAdd])
+          })
         }
       }
     }
+    this._wasCollapsed = this._isCollapsed
   }
 
   private _itemContainsActiveValue(item: MenuItem): boolean {
@@ -140,7 +147,10 @@ export class Menu extends LitElement {
 
   private _onBottomSlotChange = (e: Event) => {
     const slot = e.target as HTMLSlotElement
-    this._bottomSlotPopulated = slot.assignedNodes({ flatten: true }).length > 0
+    const populated = slot.assignedNodes({ flatten: true }).length > 0
+    queueMicrotask(() => {
+      this._bottomSlotPopulated = populated
+    })
   }
 
   private _onMouseEnter = () => {

@@ -91,7 +91,7 @@ export class DropdownButton extends LitElement {
     panel.style.display = 'block'
     const panelRect = panel.getBoundingClientRect()
     panel.style.visibility = ''
-    if (!this._open) panel.style.display = ''
+    panel.style.display = ''
 
     const gap = 4
     const spaceBelow = window.innerHeight - triggerRect.bottom - gap

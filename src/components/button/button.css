@@ -18,8 +18,7 @@ button {
     color var(--button-transition-duration) var(--ease-emphasized);
 }
 
-/* Only add gap between icon and label when an icon is slotted */
-button:has(.icon-wrapper:has(*)) {
+button.has-icon {
   gap: var(--button-icon-gap);
 }
 
@@ -29,7 +28,7 @@ button .icon-wrapper {
   align-items: center;
 }
 
-button .icon-wrapper:not(:has(*)) {
+button:not(.has-icon) .icon-wrapper {
   display: none;
 }
 
