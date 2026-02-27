@@ -1,0 +1,153 @@
+{
+  "name": "@vverchonov/web-components",
+  "version": "0.1.1",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "sideEffects": [
+    "./dist/web-components.js",
+    "./dist/button.js",
+    "./dist/table.js",
+    "./dist/dropdown-button.js",
+    "./dist/menu.js",
+    "./dist/layouts.js",
+    "./dist/toggle.js",
+    "./dist/input.js",
+    "./dist/modal.js",
+    "./dist/tabs.js",
+    "./dist/selector.js"
+  ],
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/web-components.js",
+  "module": "./dist/web-components.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/web-components.js"
+    },
+    "./button": {
+      "types": "./dist/components/button/index.d.ts",
+      "import": "./dist/button.js"
+    },
+    "./table": {
+      "types": "./dist/components/table/index.d.ts",
+      "import": "./dist/table.js"
+    },
+    "./dropdown-button": {
+      "types": "./dist/components/dropdown-button/index.d.ts",
+      "import": "./dist/dropdown-button.js"
+    },
+    "./menu": {
+      "types": "./dist/components/menu/index.d.ts",
+      "import": "./dist/menu.js"
+    },
+    "./layouts": {
+      "types": "./dist/components/layouts/index.d.ts",
+      "import": "./dist/layouts.js"
+    },
+    "./toggle": {
+      "types": "./dist/components/toggle/index.d.ts",
+      "import": "./dist/toggle.js"
+    },
+    "./input": {
+      "types": "./dist/components/input/index.d.ts",
+      "import": "./dist/input.js"
+    },
+    "./modal": {
+      "types": "./dist/components/modal/index.d.ts",
+      "import": "./dist/modal.js"
+    },
+    "./tabs": {
+      "types": "./dist/components/tabs/index.d.ts",
+      "import": "./dist/tabs.js"
+    },
+    "./selector": {
+      "types": "./dist/components/selector/index.d.ts",
+      "import": "./dist/selector.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react.js"
+    },
+    "./react/button": {
+      "types": "./dist/react/button.d.ts",
+      "import": "./dist/react/button.js"
+    },
+    "./react/dropdown-button": {
+      "types": "./dist/react/dropdown-button.d.ts",
+      "import": "./dist/react/dropdown-button.js"
+    },
+    "./react/input": {
+      "types": "./dist/react/input.d.ts",
+      "import": "./dist/react/input.js"
+    },
+    "./react/menu": {
+      "types": "./dist/react/menu.d.ts",
+      "import": "./dist/react/menu.js"
+    },
+    "./react/modal": {
+      "types": "./dist/react/modal.d.ts",
+      "import": "./dist/react/modal.js"
+    },
+    "./react/selector": {
+      "types": "./dist/react/selector.d.ts",
+      "import": "./dist/react/selector.js"
+    },
+    "./react/table": {
+      "types": "./dist/react/table.d.ts",
+      "import": "./dist/react/table.js"
+    },
+    "./react/tabs": {
+      "types": "./dist/react/tabs.d.ts",
+      "import": "./dist/react/tabs.js"
+    },
+    "./react/toggle": {
+      "types": "./dist/react/toggle.d.ts",
+      "import": "./dist/react/toggle.js"
+    },
+    "./react/layout": {
+      "types": "./dist/react/layout.d.ts",
+      "import": "./dist/react/layout.js"
+    },
+    "./react/form-layout": {
+      "types": "./dist/react/form-layout.d.ts",
+      "import": "./dist/react/form-layout.js"
+    }
+  },
+  "peerDependencies": {
+    "lit": "^3.0.0",
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@lit/react": "^1.0.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.2.1",
+    "lit": "^3.0.0",
+    "@types/react": "^19.2.14",
+    "esbuild": "^0.27.3",
+    "react": "^19.2.4",
+    "tailwindcss": "^4.2.1",
+    "typescript": "~5.9.3",
+    "vite": "^8.0.0-beta.13",
+    "vite-plugin-dts": "^4.5.4",
+    "vite-plugin-swc-transform": "^1.1.1"
+  },
+  "overrides": {
+    "vite": "^8.0.0-beta.13"
+  }
+}

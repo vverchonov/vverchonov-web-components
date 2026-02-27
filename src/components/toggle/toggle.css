@@ -1,0 +1,139 @@
+:host {
+  display: inline-block;
+}
+
+button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--toggle-label-gap);
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  /* Ensure minimum 44×44px touch target */
+  min-height: 2.75rem;
+  padding-block: 0.625rem;
+}
+
+button:focus {
+  outline: none;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-button);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* ── Label area ─────────────────────────────────────────────────────────── */
+
+.label-area {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--toggle-icon-gap);
+  color: var(--color-text);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25;
+  user-select: none;
+}
+
+.label-area:not(:has(slot[name="icon"] *)):not(:has(.label)) {
+  display: none;
+}
+
+.label {
+  display: var(--toggle-label-display, inline);
+}
+
+.icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+.icon-wrapper:not(:has(*)) {
+  display: none;
+}
+
+.label-area.icon-start .icon-wrapper {
+  order: 0;
+}
+
+.label-area.icon-start .label {
+  order: 1;
+}
+
+.label-area.icon-end .label {
+  order: 0;
+}
+
+.label-area.icon-end .icon-wrapper {
+  order: 1;
+}
+
+/* ── Track ──────────────────────────────────────────────────────────────── */
+
+.track {
+  position: relative;
+  display: var(--toggle-track-display, inline-flex);
+  align-items: center;
+  flex-shrink: 0;
+  width: var(--toggle-track-width);
+  height: var(--toggle-track-height);
+  border-radius: var(--radius-full);
+  background: var(--color-border-strong);
+  transition: background-color var(--toggle-transition-duration) var(--ease-emphasized);
+}
+
+:host([checked]) .track {
+  background: var(--color-primary);
+}
+
+button:hover:not(:disabled) .track {
+  background: var(--color-border-strong);
+  filter: brightness(0.9);
+}
+
+:host([checked]) button:hover:not(:disabled) .track {
+  background: var(--color-primary-hover);
+  filter: none;
+}
+
+/* ── Thumb ──────────────────────────────────────────────────────────────── */
+
+.thumb {
+  position: absolute;
+  left: calc((var(--toggle-track-height) - var(--toggle-thumb-size)) / 2);
+  width: var(--toggle-thumb-size);
+  height: var(--toggle-thumb-size);
+  border-radius: var(--radius-full);
+  background: var(--color-text-inverse);
+  box-shadow: 0 1px 3px oklch(0 0 0 / 0.2);
+  transform: translateX(0);
+  transition: transform var(--toggle-transition-duration) var(--ease-emphasized);
+}
+
+:host([checked]) .thumb {
+  transform: translateX(var(--toggle-thumb-travel));
+}
+
+/* ── Visually-hidden utility ────────────────────────────────────────────── */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}

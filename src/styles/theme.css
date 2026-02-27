@@ -1,0 +1,172 @@
+/**
+ * Design tokens for Tailwind v4.
+ * These are emitted as CSS custom properties on :root, so they inherit into
+ * Shadow DOM. Use in components via Tailwind classes (e.g. bg-primary) or
+ * directly as var(--color-primary), var(--radius-button), etc.
+ */
+@theme {
+  /* Semantic colors – use these in Shadow DOM components */
+  --color-primary: oklch(0.624 0.214 264.38);
+  --color-primary-hover: oklch(0.553 0.222 265.64);
+  --color-primary-muted: oklch(0.91 0.04 264);
+  --color-surface: oklch(1 0 0);
+  --color-surface-elevated: oklch(0.985 0 0);
+  --color-border: oklch(0.91 0.01 264);
+  --color-border-strong: oklch(0.75 0.02 264);
+  --color-text: oklch(0.21 0.02 264);
+  --color-text-muted: oklch(0.5 0.02 264);
+  --color-text-inverse: oklch(0.99 0 0);
+
+  /* Semantic state colors */
+  --color-valid: oklch(0.60 0.18 145);
+  --color-valid-muted: oklch(0.93 0.05 145);
+  --color-invalid: oklch(0.55 0.22 25);
+  --color-invalid-hover: oklch(0.48 0.22 25);
+  --color-invalid-muted: oklch(0.95 0.05 25);
+
+  /* Optional palette extension for utilities */
+  --color-brand-50: oklch(0.97 0.02 264);
+  --color-brand-100: oklch(0.93 0.05 264);
+  --color-brand-200: oklch(0.88 0.08 264);
+  --color-brand-300: oklch(0.78 0.12 264);
+  --color-brand-400: oklch(0.68 0.16 264);
+  --color-brand-500: oklch(0.624 0.214 264.38);
+  --color-brand-600: oklch(0.553 0.222 265.64);
+  --color-brand-700: oklch(0.48 0.19 265);
+  --color-brand-800: oklch(0.4 0.15 265);
+  --color-brand-900: oklch(0.32 0.12 265);
+
+  /* Radius tokens */
+  --radius-button: 0.375rem;
+  --radius-card: 0.5rem;
+  --radius-input: 0.375rem;
+  --radius-full: 9999px;
+
+  /* Button component – all overridable via tokens */
+  --button-font-size: 1rem;
+  --button-font-weight: 500;
+  --button-padding-block: 0.5rem;
+  --button-padding-inline: 1rem;
+  --button-margin-block: 0;
+  --button-margin-inline: 0;
+  --button-transition-duration: 0.2s;
+  --button-focus-ring-offset: 2px;
+  --button-focus-ring-width: 2px;
+  --button-icon-gap: 0.5rem;
+
+  /* Table component – overridable via tokens */
+  --table-cell-padding-block: 0.5rem;
+  --table-cell-padding-inline: 0.75rem;
+  --table-header-font-weight: 600;
+  --table-header-bg: var(--color-surface-elevated);
+  --table-border-color: var(--color-border);
+  --table-body-bg: var(--color-surface);
+  --table-text-color: var(--color-text);
+
+  /* Easing */
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized-in: cubic-bezier(0.3, 0, 1, 1);
+  --ease-emphasized-out: cubic-bezier(0, 0, 0.2, 1);
+
+  /* Dropdown button – overridable via tokens */
+  --dropdown-padding: 0.375rem;
+  --dropdown-item-padding-block: 0.375rem;
+  --dropdown-item-padding-inline: 0.5rem;
+  --dropdown-item-font-size: 0.875rem;
+  --dropdown-item-icon-gap: 0.5rem;
+
+  /* Toggle component – overridable via tokens */
+  --toggle-track-width: 2.75rem;
+  --toggle-track-height: 1.5rem;
+  --toggle-thumb-size: 1.125rem;
+  --toggle-thumb-travel: 1.25rem;
+  --toggle-transition-duration: 0.2s;
+  --toggle-icon-gap: 0.5rem;
+  --toggle-label-gap: 0.625rem;
+
+  /* Input component – overridable via tokens */
+  --input-font-size: 1rem;
+  --input-padding-block: 0.5rem;
+  --input-padding-inline: 0.75rem;
+  --input-icon-size: 1.125rem;
+  --input-icon-gap: 0.5rem;
+  --input-transition-duration: 0.2s;
+
+  /* Menu component – overridable via tokens */
+  --menu-width: 240px;
+  --menu-collapsed-width: 3.5rem;
+  --menu-bg: var(--color-surface);
+  --menu-item-padding-block: 0.5rem;
+  --menu-item-padding-inline: 0.75rem;
+  --menu-item-font-size: 0.875rem;
+  --menu-item-icon-gap: 0.625rem;
+  --menu-indent: 1rem;
+  --menu-logo-padding: 1rem;
+  --menu-search-padding: 0.75rem;
+
+  /* Tab component – overridable via tokens */
+  --tab-padding-block: 0.625rem;
+  --tab-padding-inline: 1rem;
+  --tab-font-size: 0.875rem;
+  --tab-font-weight: 500;
+  --tab-gap: 0.25rem;
+  --tab-indicator-height: 2px;
+  --tab-transition-duration: 0.2s;
+  --tab-panel-padding-block: 1rem;
+
+  /* Modal component – overridable via tokens */
+  --modal-width: 32rem;
+  --modal-padding: 1.5rem;
+  --modal-border-radius: var(--radius-card);
+  --modal-backdrop: oklch(0 0 0 / 0.45);
+  --modal-transition-duration: 0.2s;
+
+  /* Selector component – overridable via tokens */
+  --selector-min-height: 2.5rem;
+  --selector-chip-gap: 0.25rem;
+  --selector-chip-padding-block: 0.125rem;
+  --selector-chip-padding-inline: 0.5rem;
+  --selector-chip-font-size: 0.8125rem;
+  --selector-panel-max-height: 16rem;
+  --selector-transition-duration: 0.2s;
+}
+
+/* ── Dark theme (system preference) ──────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-primary: oklch(0.70 0.20 264);
+    --color-primary-hover: oklch(0.78 0.19 264);
+    --color-primary-muted: oklch(0.24 0.05 264);
+    --color-surface: oklch(0.14 0.01 264);
+    --color-surface-elevated: oklch(0.19 0.01 264);
+    --color-border: oklch(0.28 0.02 264);
+    --color-border-strong: oklch(0.40 0.03 264);
+    --color-text: oklch(0.93 0.01 264);
+    --color-text-muted: oklch(0.62 0.02 264);
+    --color-text-inverse: oklch(0.14 0.01 264);
+    --color-valid: oklch(0.68 0.18 145);
+    --color-valid-muted: oklch(0.22 0.05 145);
+    --color-invalid: oklch(0.65 0.22 25);
+    --color-invalid-hover: oklch(0.58 0.22 25);
+    --color-invalid-muted: oklch(0.22 0.06 25);
+  }
+}
+
+/* ── Dark theme (manual override) ────────────────────────────────────────── */
+:root[data-theme="dark"] {
+  --color-primary: oklch(0.70 0.20 264);
+  --color-primary-hover: oklch(0.78 0.19 264);
+  --color-primary-muted: oklch(0.24 0.05 264);
+  --color-surface: oklch(0.14 0.01 264);
+  --color-surface-elevated: oklch(0.19 0.01 264);
+  --color-border: oklch(0.28 0.02 264);
+  --color-border-strong: oklch(0.40 0.03 264);
+  --color-text: oklch(0.93 0.01 264);
+  --color-text-muted: oklch(0.62 0.02 264);
+  --color-text-inverse: oklch(0.14 0.01 264);
+  --color-valid: oklch(0.68 0.18 145);
+  --color-valid-muted: oklch(0.22 0.05 145);
+  --color-invalid: oklch(0.65 0.22 25);
+  --color-invalid-hover: oklch(0.58 0.22 25);
+  --color-invalid-muted: oklch(0.22 0.06 25);
+}

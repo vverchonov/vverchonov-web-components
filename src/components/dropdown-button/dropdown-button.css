@@ -1,0 +1,171 @@
+:host {
+  display: inline-block;
+  position: relative;
+}
+
+/* ── Trigger (button-like) ───────────────────────────────────────────────── */
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--button-icon-gap);
+  margin: var(--button-margin-block) var(--button-margin-inline);
+  padding: var(--button-padding-block) var(--button-padding-inline);
+  font-size: var(--button-font-size);
+  font-weight: var(--button-font-weight);
+  border: none;
+  border-radius: var(--radius-button);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  cursor: pointer;
+  transition:
+    background-color var(--button-transition-duration) var(--ease-emphasized);
+}
+
+.trigger:hover {
+  background: var(--color-primary-hover);
+}
+
+.trigger:focus {
+  outline: none;
+}
+
+.trigger .icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+}
+
+.trigger .icon-wrapper:not(:has(*)) {
+  display: none;
+}
+
+.trigger .label {
+  display: inline;
+}
+
+.trigger .label:empty {
+  display: none;
+}
+
+.chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--button-transition-duration) var(--ease-emphasized);
+}
+
+.trigger[aria-expanded='true'] .chevron {
+  transform: rotate(180deg);
+}
+
+/* ── Panel ───────────────────────────────────────────────────────────────── */
+
+.panel {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  min-width: 180px;
+  max-width: 320px;
+  max-height: min(80vh, 400px);
+  overflow-y: auto;
+  padding: var(--dropdown-padding, 0.375rem);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: 0 4px 12px oklch(0 0 0 / 0.12);
+  margin: 0;
+}
+
+.panel.is-open {
+  display: block;
+}
+
+/* ── Menu list ────────────────────────────────────────────────────────────── */
+
+.menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.menu-item-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--dropdown-item-icon-gap, 0.5rem);
+  width: 100%;
+  padding: var(--dropdown-item-padding-block, 0.375rem) var(--dropdown-item-padding-inline, 0.5rem);
+  font-size: var(--dropdown-item-font-size, 0.875rem);
+  font-weight: 400;
+  text-align: left;
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  border-radius: calc(var(--radius-card) - 2px);
+  cursor: pointer;
+  transition: background-color 0.15s var(--ease-emphasized);
+}
+
+.menu-item:hover,
+.menu-item:focus {
+  background: var(--color-primary-muted);
+  outline: none;
+}
+
+.menu-item.is-expanded {
+  background: var(--color-primary-muted);
+  color: var(--color-primary);
+}
+
+.menu-item .item-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25em;
+  height: 1.25em;
+  color: var(--color-text-muted);
+}
+
+.menu-item .item-icon:empty {
+  display: none;
+}
+
+.menu-item .item-label {
+  flex: 1;
+}
+
+/* Submenu indicator chevron: points right when collapsed, down when expanded */
+.menu-item .submenu-indicator {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text-muted);
+  transform: rotate(-90deg);
+  transition: transform var(--button-transition-duration) var(--ease-emphasized);
+}
+
+.menu-item.is-expanded .submenu-indicator {
+  transform: rotate(0deg);
+  color: var(--color-primary);
+}
+
+/* ── Inline sub-menu ─────────────────────────────────────────────────────── */
+
+.submenu {
+  display: none;
+  margin: 2px 0 4px calc(var(--dropdown-item-padding-inline, 0.5rem) + 0.25rem);
+  padding-left: 0.5rem;
+  border-left: 2px solid var(--color-border);
+}
+
+.submenu.is-open {
+  display: flex;
+}

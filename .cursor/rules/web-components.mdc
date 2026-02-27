@@ -1,0 +1,238 @@
+---
+description: How to build Lit web components in this project
+globs: src/components/**/*.ts, src/components/**/*.css
+alwaysApply: false
+---
+
+# Web components (Lit 3)
+
+## Component layout
+
+One folder per component: `src/components/<name>/` with:
+
+- `<name>.ts` — Lit class and `@customElement`
+- `<name>.css` — component styles (use theme tokens)
+- `<name>.d.ts` — augment `HTMLElementTagNameMap` for the tag
+- `<name>-types.ts` — exported type aliases and interfaces (property unions, event details, config shapes). Omit only if the component has zero consumer-facing types.
+- `index.ts` — export class, re-export types, and side-effect import so the element registers
+
+In `src/index.ts`: export each component class, re-export all public types, and side-effect import each component folder so all elements register when the library loads.
+
+## Lit 3 + decorators
+
+- Tag: `@customElement('app-<name>')` (must contain a hyphen; this repo uses `app-` prefix).
+- Props: `@property()` for attributes; `@property({ attribute: false })` for callbacks (e.g. `onClick`).
+- Class extends `LitElement`; use `override render()` and `static override styles = [unsafeCSS(componentCss)]`. Import CSS with `?inline`.
+
+```ts
+import { LitElement, html, unsafeCSS } from 'lit'
+import { customElement, property } from 'lit/decorators.js'
+import styles from './my-component.css?inline'
+
+@customElement('app-my-component')
+export class MyComponent extends LitElement {
+  static override styles = [unsafeCSS(styles)]
+  @property({ type: String }) label = ''
+  override render() { return html`<span>${this.label}</span>` }
+}
+```
+
+## Styling
+
+- Component CSS: `import styles from './<name>.css?inline'` then `unsafeCSS(styles)` in `static override styles`.
+- Use design tokens from `src/styles/theme.css` (e.g. `var(--color-primary)`, `var(--radius-button)`, `var(--ease-emphasized)`) so Shadow DOM stays themed.
+- Use `:host` in component CSS for the host (e.g. `display: inline-block`).
+
+## TypeScript
+
+Add a `.d.ts` next to each component that augments `HTMLElementTagNameMap` so `querySelector` is typed:
+
+```ts
+import type { MyComponent } from './my-component'
+declare global {
+  interface HTMLElementTagNameMap { 'app-my-component': MyComponent }
+}
+```
+
+## Type exports
+
+Every component must export all consumer-facing types so library users can `import type { ... } from 'web-components'`.
+
+1. **Create a `<name>-types.ts`** file next to the component `.ts` file. Put all exported type aliases and interfaces there (property union types, event detail interfaces, config objects, etc.). If a component only has types defined inline in the class, extract them into this file.
+2. **Re-export from the component barrel** (`index.ts`):
+
+```ts
+export { MyComponent } from './my-component.ts'
+export type { MyPropType, MyEventDetail } from './my-component-types.ts'
+import './my-component.ts'
+```
+
+3. **Re-export from `src/index.ts`**:
+
+```ts
+export type { MyPropType, MyEventDetail } from './components/my-component'
+```
+
+Types to extract include:
+- Union/literal types used for `@property()` values (e.g. variant, size, state enums).
+- Interfaces for custom event `detail` payloads.
+- Interfaces/types for complex property shapes (e.g. column definitions, menu items).
+
+### No inline string literal unions on properties
+
+Every string-literal union used to type a `@property()` **must** be a named `type` alias exported from `<name>-types.ts`. Never write the union inline on the class field.
+
+```ts
+// ❌ BAD — inline union
+@property({ type: String })
+variant: 'primary' | 'secondary' | 'ghost' = 'primary'
+
+// ✅ GOOD — named type from types file
+// in my-component-types.ts:
+//   export type MyComponentVariant = 'primary' | 'secondary' | 'ghost'
+@property({ type: String })
+variant: MyComponentVariant = 'primary'
+```
+
+## JSDoc
+
+Every component **must** have JSDoc. This is required for new components and must be maintained when editing existing ones.
+
+### Class-level JSDoc
+
+Place directly above `@customElement(…)`. Include:
+- One-sentence purpose.
+- `@tag` — the custom element tag name.
+- `@slot` — one entry per named slot (and the default slot if used). Format: `@slot name - Description.`
+- `@fires` — one entry per custom event. Format: `@fires event-name - When it fires. Detail shape.`
+
+```ts
+/**
+ * Text input with optional label, leading icon slot, and validation state.
+ *
+ * @tag app-input
+ * @slot icon - Optional leading icon displayed before the input field.
+ * @fires input - Native input event on value change.
+ */
+@customElement('app-input')
+export class Input extends LitElement { … }
+```
+
+### Property-level JSDoc
+
+Every public `@property()` and callback (`attribute: false`) must have a one-line JSDoc comment. Mention the HTML attribute name when it differs from the property name.
+
+```ts
+/** Visible label rendered above the input. */
+@property({ type: String })
+label = ''
+
+/** Error text shown when `state` is `'invalid'` (attribute: `error-message`). */
+@property({ type: String, attribute: 'error-message' })
+errorMessage = ''
+
+/** Callback invoked with the new value on every input event. Set via property. */
+@property({ attribute: false })
+onChange?: (value: string) => void
+```
+
+### Type-level JSDoc
+
+Every exported type and interface in `<name>-types.ts` must have a one-line JSDoc comment. Interface members that are not self-explanatory should also be documented.
+
+```ts
+/** Allowed HTML input types for `<app-input>`. */
+export type InputType = 'text' | 'email' | 'password' | …
+
+/** Detail payload for the `selector-change` custom event. */
+export interface SelectorChangeEventDetail {
+  /** Selected values. Always an array. */
+  value: string[]
+}
+```
+
+## Build
+
+Vite uses SWC with legacy decorators and `useDefineForClassFields: false`. Keep using `@property()` with initializers; do not rely on `useDefineForClassFields: true`.
+
+## Accessibility (WCAG 2.2)
+
+All components must meet WCAG 2.2 AA. Organize thinking by the four principles:
+
+### Perceivable
+
+- Decorative SVG/icons: always add `aria-hidden="true"`.
+- Meaningful images/SVG: provide an accessible name via `aria-label` on the element or a `<title>` inside the SVG.
+- Never convey information by color alone — pair color with text, icon, or pattern.
+- Color contrast: normal text ≥ 4.5 : 1, large text / UI components ≥ 3 : 1. Always use `var(--color-*)` tokens so theming stays compliant.
+
+### Operable
+
+- **Keyboard**: every interactive element must be reachable via Tab and operable with Enter/Space. Custom elements must not swallow keyboard events without re-dispatching them.
+- **Focus indicator** (2.4.11 — new in WCAG 2.2): `:focus-visible` outline ≥ 2 px solid, contrast ≥ 3 : 1 against adjacent background. Shadow DOM must declare this in the component CSS:
+
+```css
+/* in component CSS */
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+```
+
+- **Target size** (2.5.8 — new in WCAG 2.2): interactive targets ≥ 24 × 24 CSS px. Prefer ≥ 44 × 44 px for primary actions.
+- **No keyboard trap**: modal-like panels (e.g. column-toggle) must close on Escape. Wire this in `connectedCallback`/`disconnectedCallback`:
+
+```ts
+connectedCallback() {
+  super.connectedCallback()
+  this.addEventListener('keydown', this._handleKeydown)
+}
+disconnectedCallback() {
+  super.disconnectedCallback()
+  this.removeEventListener('keydown', this._handleKeydown)
+}
+private _handleKeydown = (e: KeyboardEvent) => {
+  if (e.key === 'Escape') this._togglePanelOpen = false
+}
+```
+
+### Understandable
+
+- Buttons must always have an accessible name. Icon-only buttons must set `aria-label`:
+
+```ts
+// ✅ icon-only
+html`<button aria-label="Delete row"><svg aria-hidden="true">…</svg></button>`
+// ✅ labelled by visible text — no aria-label needed
+html`<button><svg aria-hidden="true">…</svg> Delete row</button>`
+```
+
+- Communicate dynamic state changes with ARIA: `aria-sort` on sortable headers, `aria-expanded` on disclosure buttons, `aria-current="page"` on active pagination buttons.
+- Add a live region for content that updates in place (e.g. pagination count) so screen readers announce the change:
+
+```ts
+html`<span aria-live="polite" class="sr-only">
+  Page ${this._page} of ${this._totalPages}
+</span>`
+```
+
+- Include a visually-hidden utility class in component CSS when needed:
+
+```css
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+```
+
+### Robust
+
+- Prefer native semantics (`<button>`, `<table>`, `<th scope="col">`, `<nav>`) over custom `role=` attributes.
+- When a custom `role` is required, always include its mandatory ARIA states/properties (e.g. `role="menuitemcheckbox"` requires `aria-checked`).
+- Validate component markup with axe-core or Playwright accessibility checks in CI.

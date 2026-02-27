@@ -1,0 +1,104 @@
+:host {
+  display: block;
+}
+
+/* ── Tab bar ───────────────────────────────────────────────────────────── */
+
+.tablist {
+  display: flex;
+  gap: var(--tab-gap);
+  border-bottom: 1px solid var(--color-border);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tablist::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Tab button ────────────────────────────────────────────────────────── */
+
+.tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-block: var(--tab-padding-block);
+  padding-inline: var(--tab-padding-inline);
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--tab-font-size);
+  font-weight: var(--tab-font-weight);
+  line-height: 1.25;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  user-select: none;
+  /* WCAG 2.5.8 – min 24×24 target */
+  min-height: 2.75rem;
+  transition:
+    color var(--tab-transition-duration) var(--ease-emphasized),
+    background-color var(--tab-transition-duration) var(--ease-emphasized);
+}
+
+.tab::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--tab-indicator-height);
+  background: transparent;
+  border-radius: var(--tab-indicator-height) var(--tab-indicator-height) 0 0;
+  transition: background-color var(--tab-transition-duration) var(--ease-emphasized);
+}
+
+.tab:hover:not(:disabled) {
+  color: var(--color-text);
+  background: var(--color-surface-elevated);
+}
+
+.tab[aria-selected="true"] {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.tab[aria-selected="true"]::after {
+  background: var(--color-primary);
+}
+
+.tab:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.tab:focus {
+  outline: none;
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+  border-radius: var(--radius-button);
+}
+
+/* ── Panel ─────────────────────────────────────────────────────────────── */
+
+.panel {
+  padding-block-start: var(--tab-panel-padding-block);
+}
+
+/* ── Visually-hidden utility ───────────────────────────────────────────── */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}

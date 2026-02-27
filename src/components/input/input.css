@@ -1,0 +1,127 @@
+:host {
+  display: block;
+}
+
+/* ── Wrapper ─────────────────────────────────────────────────────────────── */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+/* ── Label ───────────────────────────────────────────────────────────────── */
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+  line-height: 1.25;
+}
+
+/* ── Input row ───────────────────────────────────────────────────────────── */
+.input-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Icon slot (left) ────────────────────────────────────────────────────── */
+.icon-wrapper {
+  position: absolute;
+  left: var(--input-padding-inline);
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+/* ── Native input ────────────────────────────────────────────────────────── */
+input {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: var(--input-font-size);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-input);
+  padding-block: var(--input-padding-block);
+  padding-inline: var(--input-padding-inline);
+  transition: border-color var(--input-transition-duration) var(--ease-emphasized),
+              box-shadow var(--input-transition-duration) var(--ease-emphasized);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+/* Shift text right when the icon slot is populated (class set via slotchange) */
+.input-row.has-icon input {
+  padding-left: calc(var(--input-padding-inline) + var(--input-icon-size) + var(--input-icon-gap));
+}
+
+/* Reserve right space only when a state icon is actually rendered */
+:host([state="valid"]) input,
+:host([state="invalid"]) input {
+  padding-right: calc(var(--input-padding-inline) + var(--input-icon-size) + var(--input-icon-gap));
+}
+
+input::placeholder {
+  color: var(--color-text-muted);
+}
+
+input:hover:not(:disabled) {
+  border-color: var(--color-border-strong);
+  box-shadow: 0 0 0 1px var(--color-border-strong);
+}
+
+input:focus-visible {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--color-surface-elevated);
+}
+
+/* ── State icon (right) ──────────────────────────────────────────────────── */
+.state-icon {
+  position: absolute;
+  right: var(--input-padding-inline);
+  display: inline-flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.state-icon--valid {
+  color: var(--color-valid);
+}
+
+.state-icon--invalid {
+  color: var(--color-invalid);
+}
+
+/* ── Valid state ─────────────────────────────────────────────────────────── */
+:host([state="valid"]) input {
+  border-color: var(--color-valid);
+}
+
+:host([state="valid"]) input:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-valid);
+}
+
+/* ── Invalid state ───────────────────────────────────────────────────────── */
+:host([state="invalid"]) input {
+  border-color: var(--color-invalid);
+  background: var(--color-invalid-muted);
+}
+
+:host([state="invalid"]) input:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-invalid);
+}
+
+/* ── Error text ──────────────────────────────────────────────────────────── */
+.error-text {
+  font-size: 0.8125rem;
+  color: var(--color-invalid);
+  line-height: 1.4;
+}

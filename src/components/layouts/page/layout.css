@@ -1,0 +1,36 @@
+/* =========================================================
+   app-layout — structural shell (no Shadow DOM)
+   Injected once into document.head by layout.ts
+   ========================================================= */
+
+app-layout {
+  display: block;
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/**
+ * Sidebar: position:fixed takes it fully out of document flow.
+ * The menu element controls its own width (3.5rem collapsed →
+ * 240px on hover) without ever affecting the content area.
+ * z-index ensures it renders on top when expanded.
+ */
+app-layout > [slot='sidebar'] {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 100;
+}
+
+/**
+ * Content: a fixed left margin equal to the collapsed sidebar
+ * width creates the visible gap. This value never changes, so
+ * expanding the menu (which is out of flow) cannot push content.
+ */
+app-layout > [slot='content'] {
+  margin-left: var(--menu-collapsed-width, 3.5rem);
+  min-height: 100vh;
+  overflow: auto;
+}
