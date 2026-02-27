@@ -11,7 +11,7 @@
 
 /* ── Label ───────────────────────────────────────────────────────────────── */
 .label {
-  font-size: 0.875rem;
+  font-size: var(--font-size-base);
   font-weight: 500;
   color: var(--color-text);
   line-height: 1.25;
@@ -216,7 +216,7 @@
 
 /* ── Group header ────────────────────────────────────────────────────────── */
 .group-header {
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -333,7 +333,7 @@
 
 /* ── Error text ──────────────────────────────────────────────────────────── */
 .error-text {
-  font-size: 0.8125rem;
+  font-size: var(--font-size-sm);
   color: var(--color-invalid);
   line-height: 1.4;
 }

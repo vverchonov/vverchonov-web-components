@@ -37,7 +37,7 @@ button:disabled {
   align-items: center;
   gap: var(--toggle-icon-gap);
   color: var(--color-text);
-  font-size: 0.875rem;
+  font-size: var(--font-size-base);
   font-weight: 500;
   line-height: 1.25;
   user-select: none;

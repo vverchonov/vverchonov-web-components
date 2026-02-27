@@ -26,7 +26,7 @@ export class DropdownButton extends LitElement {
   @property({ type: String })
   label = ''
 
-  /** Where the dropdown panel appears relative to the trigger. */
+  /** Preferred direction for the dropdown panel. Auto-flips when insufficient viewport space. */
   @property({ type: String })
   placement: DropdownPlacement = 'bottom'
 
@@ -84,17 +84,42 @@ export class DropdownButton extends LitElement {
     const trigger = this.shadowRoot?.querySelector<HTMLElement>('.trigger')
     const panel = this.shadowRoot?.querySelector<HTMLElement>('.panel')
     if (!trigger || !panel) return
-    const rect = trigger.getBoundingClientRect()
+
+    const triggerRect = trigger.getBoundingClientRect()
+
+    panel.style.visibility = 'hidden'
+    panel.style.display = 'block'
+    const panelRect = panel.getBoundingClientRect()
+    panel.style.visibility = ''
+    if (!this._open) panel.style.display = ''
+
+    const gap = 4
+    const spaceBelow = window.innerHeight - triggerRect.bottom - gap
+    const spaceAbove = triggerRect.top - gap
+
+    let effective: DropdownPlacement = this.placement
+    if (effective === 'bottom' && panelRect.height > spaceBelow && spaceAbove > spaceBelow) {
+      effective = 'top'
+    } else if (effective === 'top' && panelRect.height > spaceAbove && spaceBelow > spaceAbove) {
+      effective = 'bottom'
+    }
+
     panel.style.right = 'auto'
     panel.style.bottom = 'auto'
     panel.style.top = 'auto'
-    if (this.placement === 'top') {
-      panel.style.bottom = `${window.innerHeight - rect.top + 4}px`
-      panel.style.top = 'auto'
+
+    if (effective === 'top') {
+      panel.style.bottom = `${window.innerHeight - triggerRect.top + gap}px`
     } else {
-      panel.style.top = `${rect.bottom + 4}px`
+      panel.style.top = `${triggerRect.bottom + gap}px`
     }
-    panel.style.left = `${rect.left}px`
+
+    let left = triggerRect.left
+    if (left + panelRect.width > window.innerWidth) {
+      left = window.innerWidth - panelRect.width - 8
+    }
+    if (left < 0) left = 8
+    panel.style.left = `${left}px`
   }
 
   /**

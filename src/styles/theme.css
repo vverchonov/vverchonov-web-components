@@ -42,8 +42,16 @@
   --radius-input: 0.375rem;
   --radius-full: 9999px;
 
+  /* Typography scale */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.8125rem;
+  --font-size-base: 0.875rem;
+  --font-size-md: 0.9375rem;
+  --font-size-lg: 1rem;
+  --font-size-xl: 1.125rem;
+
   /* Button component – all overridable via tokens */
-  --button-font-size: 1rem;
+  --button-font-size: var(--font-size-lg);
   --button-font-weight: 500;
   --button-padding-block: 0.5rem;
   --button-padding-inline: 1rem;
@@ -72,7 +80,7 @@
   --dropdown-padding: 0.375rem;
   --dropdown-item-padding-block: 0.375rem;
   --dropdown-item-padding-inline: 0.5rem;
-  --dropdown-item-font-size: 0.875rem;
+  --dropdown-item-font-size: var(--font-size-base);
   --dropdown-item-icon-gap: 0.5rem;
 
   /* Toggle component – overridable via tokens */
@@ -85,7 +93,7 @@
   --toggle-label-gap: 0.625rem;
 
   /* Input component – overridable via tokens */
-  --input-font-size: 1rem;
+  --input-font-size: var(--font-size-lg);
   --input-padding-block: 0.5rem;
   --input-padding-inline: 0.75rem;
   --input-icon-size: 1.125rem;
@@ -98,7 +106,7 @@
   --menu-bg: var(--color-surface);
   --menu-item-padding-block: 0.5rem;
   --menu-item-padding-inline: 0.75rem;
-  --menu-item-font-size: 0.875rem;
+  --menu-item-font-size: var(--font-size-base);
   --menu-item-icon-gap: 0.625rem;
   --menu-indent: 1rem;
   --menu-logo-padding: 1rem;
@@ -107,7 +115,7 @@
   /* Tab component – overridable via tokens */
   --tab-padding-block: 0.625rem;
   --tab-padding-inline: 1rem;
-  --tab-font-size: 0.875rem;
+  --tab-font-size: var(--font-size-base);
   --tab-font-weight: 500;
   --tab-gap: 0.25rem;
   --tab-indicator-height: 2px;
@@ -121,12 +129,24 @@
   --modal-backdrop: oklch(0 0 0 / 0.45);
   --modal-transition-duration: 0.2s;
 
+  /* Radio group component – overridable via tokens */
+  --radio-size: 1.25rem;
+  --radio-dot-size: 0.5rem;
+  --radio-gap: 0.625rem;
+  --radio-label-gap: 0.5rem;
+  --radio-transition-duration: 0.2s;
+
+  /* Card component – overridable via tokens */
+  --card-padding: 1rem;
+  --card-gap: 0.75rem;
+  --card-transition-duration: 0.25s;
+
   /* Selector component – overridable via tokens */
   --selector-min-height: 2.5rem;
   --selector-chip-gap: 0.25rem;
   --selector-chip-padding-block: 0.125rem;
   --selector-chip-padding-inline: 0.5rem;
-  --selector-chip-font-size: 0.8125rem;
+  --selector-chip-font-size: var(--font-size-sm);
   --selector-panel-max-height: 16rem;
   --selector-transition-duration: 0.2s;
 }

@@ -69,7 +69,7 @@
 
 .title {
   margin: 0;
-  font-size: 1.125rem;
+  font-size: var(--font-size-xl);
   font-weight: 600;
   line-height: 1.3;
   color: var(--color-text);
@@ -107,7 +107,7 @@
   margin: 0;
   padding-inline: var(--modal-padding);
   padding-block-end: 1rem;
-  font-size: 0.9375rem;
+  font-size: var(--font-size-md);
   line-height: 1.5;
   color: var(--color-text-muted);
   flex-shrink: 0;

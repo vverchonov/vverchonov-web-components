@@ -1,6 +1,6 @@
 {
   "name": "@vverchonov/web-components",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "publishConfig": {
     "access": "public"
@@ -21,7 +21,9 @@
     "./dist/input.js",
     "./dist/modal.js",
     "./dist/tabs.js",
-    "./dist/selector.js"
+    "./dist/selector.js",
+    "./dist/card.js",
+    "./dist/radio-group.js"
   ],
   "files": [
     "dist"
@@ -74,6 +76,14 @@
       "types": "./dist/components/selector/index.d.ts",
       "import": "./dist/selector.js"
     },
+    "./card": {
+      "types": "./dist/components/card/index.d.ts",
+      "import": "./dist/card.js"
+    },
+    "./radio-group": {
+      "types": "./dist/components/radio-group/index.d.ts",
+      "import": "./dist/radio-group.js"
+    },
     "./react": {
       "types": "./dist/react/index.d.ts",
       "import": "./dist/react.js"
@@ -118,9 +128,17 @@
       "types": "./dist/react/layout.d.ts",
       "import": "./dist/react/layout.js"
     },
+    "./react/card": {
+      "types": "./dist/react/card.d.ts",
+      "import": "./dist/react/card.js"
+    },
     "./react/form-layout": {
       "types": "./dist/react/form-layout.d.ts",
       "import": "./dist/react/form-layout.js"
+    },
+    "./react/radio-group": {
+      "types": "./dist/react/radio-group.d.ts",
+      "import": "./dist/react/radio-group.js"
     }
   },
   "peerDependencies": {

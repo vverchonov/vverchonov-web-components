@@ -4,7 +4,7 @@ A library of reusable UI components built with [Lit 3](https://lit.dev/), shippe
 
 ## Features
 
-- **11 components** — Button, Input, Toggle, Table, Menu, Modal, Tabs, Selector, Dropdown Button, Layout, Form Layout
+- **13 components** — Button, Input, Toggle, Table, Menu, Modal, Tabs, Selector, Dropdown Button, Layout, Form Layout, Card, Radio Group
 - **React wrappers** via `@lit/react` — use every component as a native React element
 - **Dark mode** — automatic (system preference) and manual (`data-theme`)
 - **Fully typed** — written in TypeScript with exported types for every component
@@ -75,6 +75,8 @@ import { Button, Input, Table } from '@vverchonov/web-components/react'
 | `app-dropdown-button` | `DropdownButton` | `./dropdown-button` | Dropdown menu button with nested submenus |
 | `app-layout` | `Layout` | `./layouts` | Page layout with sidebar slot |
 | `app-form-layout` | `FormLayout` | `./layouts` | Form shell with multi-step support and column grids |
+| `app-card` | `Card` | `./card` | Collapsible content card (elevated, outlined, filled) |
+| `app-radio-group` | `RadioGroup` | `./radio-group` | Radio button group with validation states |
 
 ## Theming
 
@@ -113,6 +115,9 @@ Available values: `"dark"`, `"light"` (overrides system preference), or omit the
 | Menu | `--menu-width`, `--menu-collapsed-width` |
 | Toggle | `--toggle-track-width`, `--toggle-thumb-size` |
 | Tabs | `--tab-padding-block`, `--tab-indicator-height` |
+| Dropdown | `--dropdown-padding`, `--dropdown-item-padding-block`, `--dropdown-item-font-size` |
+| Radio Group | `--radio-size`, `--radio-dot-size`, `--radio-gap` |
+| Card | `--card-padding`, `--card-gap`, `--card-transition-duration` |
 | Selector | `--selector-min-height`, `--selector-panel-max-height` |
 
 See `src/styles/theme.css` for the full list of tokens and their default values.

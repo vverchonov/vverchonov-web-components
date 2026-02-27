@@ -30,7 +30,7 @@
 
 .title {
   margin: 0;
-  font-size: 1.125rem;
+  font-size: var(--font-size-xl);
   font-weight: 600;
   line-height: 1.4;
   color: var(--color-text);
@@ -38,7 +38,7 @@
 
 .description {
   margin: 0.375rem 0 0;
-  font-size: 0.875rem;
+  font-size: var(--font-size-base);
   color: var(--color-text-muted);
   line-height: 1.5;
 }
@@ -82,7 +82,7 @@
   background: transparent;
   cursor: default;
   color: var(--color-text-muted);
-  font-size: 0.875rem;
+  font-size: var(--font-size-base);
   font-weight: 500;
   white-space: nowrap;
   flex-shrink: 0;
@@ -111,7 +111,7 @@
   height: 1.75rem;
   border-radius: var(--radius-full);
   border: 2px solid currentColor;
-  font-size: 0.8125rem;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   flex-shrink: 0;
   transition: background 0.15s, color 0.15s, border-color 0.15s;

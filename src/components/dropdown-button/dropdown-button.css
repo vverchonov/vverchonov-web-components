@@ -102,7 +102,7 @@
   gap: var(--dropdown-item-icon-gap, 0.5rem);
   width: 100%;
   padding: var(--dropdown-item-padding-block, 0.375rem) var(--dropdown-item-padding-inline, 0.5rem);
-  font-size: var(--dropdown-item-font-size, 0.875rem);
+  font-size: var(--dropdown-item-font-size, var(--font-size-base));
   font-weight: 400;
   text-align: left;
   color: var(--color-text);

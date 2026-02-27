@@ -9,12 +9,15 @@ import './components/input'
 import './components/modal'
 import './components/tabs'
 import './components/selector'
+import './components/radio-group'
+import './components/card'
 import { html, render } from 'lit'
 import type { ColumnDef } from './components/table'
 import type { DropdownItem } from './components/dropdown-button'
 import type { MenuItem } from './components/menu'
 import type { ToggleChangeEventDetail } from './components/toggle'
 import type { SelectorOption, SelectorGroup } from './components/selector'
+import type { RadioGroupItem } from './components/radio-group'
 import { mockTableRows, mockTableRowsSmall, type MockTableRow } from './mock/table-data'
 
 // ── Theme management ────────────────────────────────────────────────────────
@@ -184,6 +187,25 @@ let selectorMultiValue: string[] = ['apple', 'cherry']
 let selectorSearchValue: string[] = ['us']
 let selectorGroupedValue: string[] = []
 
+// ── Radio group demo data ────────────────────────────────────────────────────
+
+const radioSizeItems: RadioGroupItem[] = [
+  { label: 'Small',  value: 'sm' },
+  { label: 'Medium', value: 'md' },
+  { label: 'Large',  value: 'lg' },
+]
+
+const radioPlanItems: RadioGroupItem[] = [
+  { label: 'Free',       value: 'free' },
+  { label: 'Pro',        value: 'pro' },
+  { label: 'Enterprise', value: 'enterprise' },
+  { label: 'Legacy',     value: 'legacy', disabled: true },
+]
+
+let radioSizeValue = 'md'
+let radioPlanValue = ''
+let radioValidationValue = ''
+
 // ── Sidebar menu data ────────────────────────────────────────────────────────
 
 const buttonIcon     = html`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M12 12h.01"/></svg>`
@@ -197,6 +219,8 @@ const formLayoutIcon = html`<svg xmlns="http://www.w3.org/2000/svg" width="20" h
 const modalNavIcon   = html`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/><path d="M9 19v2M15 19v2"/></svg>`
 const tabsNavIcon    = html`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h4l3-4h4l3 4h4v14H3z"/><path d="M3 11h18"/></svg>`
 const selectorIcon   = html`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12l3 3 5-5"/></svg>`
+const radioGroupIcon = html`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="6" r="3"/><circle cx="12" cy="12" r="3"/><circle cx="12" cy="18" r="3"/><circle cx="12" cy="12" r="1.25" fill="currentColor" stroke="none"/></svg>`
+const cardIcon           = html`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M2 9h20"/></svg>`
 const componentsGroupIcon = html`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><rect x="14" y="14" width="8" height="8" rx="1"/></svg>`
 const layoutsGroupIcon    = html`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>`
 
@@ -215,6 +239,8 @@ const sidebarItems: MenuItem[] = [
       { label: 'Modal',         value: 'modal',       icon: modalNavIcon    },
       { label: 'Tabs',          value: 'tabs',        icon: tabsNavIcon     },
       { label: 'Selector',      value: 'selector',    icon: selectorIcon    },
+      { label: 'Radio Group',   value: 'radio-group', icon: radioGroupIcon  },
+      { label: 'Card',          value: 'card',        icon: cardIcon         },
     ],
   },
   {
@@ -359,13 +385,34 @@ function renderDropdownPage() {
       </section>
 
       <section class="demo-section">
+        <h2 class="section-title">Auto-flip positioning</h2>
+        <p class="section-desc">
+          The dropdown automatically flips above the trigger when there isn't enough viewport space below. Try opening these dropdowns inside the short scrollable container.
+        </p>
+        <div class="demo-row" style="height: 120px; overflow: auto; border: 1px solid var(--color-border); border-radius: var(--radius-card); padding: 0.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; min-height: 200px; padding-top: 140px;">
+            <app-dropdown-button
+              label="Opens above"
+              .items=${dropdownActions}
+              @dropdown-select=${(e: Event) => console.log('dropdown-select:', (e as CustomEvent).detail)}
+            ></app-dropdown-button>
+            <app-dropdown-button
+              label="Also flips"
+              .items=${dropdownWithSubmenus}
+              @dropdown-select=${(e: Event) => console.log('dropdown-select:', (e as CustomEvent).detail)}
+            ></app-dropdown-button>
+          </div>
+        </div>
+      </section>
+
+      <section class="demo-section">
         <h2 class="section-title">Properties</h2>
         <div class="props-table">
           <div class="prop-row prop-row--header">
             <span>Property</span><span>Type</span><span>Default</span><span>Description</span>
           </div>
           <div class="prop-row"><span><code>label</code></span><span><code>string</code></span><span><code>''</code></span><span>Trigger button text. Omit or leave empty for icon-only trigger when using <code>slot="icon"</code>.</span></div>
-          <div class="prop-row"><span><code>placement</code></span><span><code>'bottom' | 'top'</code></span><span><code>'bottom'</code></span><span>Opens the panel below or above the trigger.</span></div>
+          <div class="prop-row"><span><code>placement</code></span><span><code>'bottom' | 'top'</code></span><span><code>'bottom'</code></span><span>Preferred direction for the panel. Automatically flips to the opposite side when there is not enough viewport space.</span></div>
           <div class="prop-row"><span><code>items</code></span><span><code>DropdownItem[]</code></span><span><code>[]</code></span><span>Menu items: <code>{ label, value?, icon?, children? }</code>. <code>children</code> creates nested submenus. Set via property.</span></div>
         </div>
       </section>
@@ -1374,6 +1421,255 @@ function renderSelectorPage() {
   `
 }
 
+function renderRadioGroupPage() {
+  return html`
+    <div class="page-content">
+      <div class="page-header">
+        <h1 class="page-title">Radio Group</h1>
+        <p class="page-desc">Single-option selector with keyboard navigation and validation.</p>
+      </div>
+
+      <section class="demo-section">
+        <h2 class="section-title">Use cases</h2>
+        <p class="section-desc">
+          Use <code>app-radio-group</code> for mutually-exclusive choices such as sizes, plans, or preferences. Pass an <code>items</code> array and listen to <code>radio-change</code> to track the selected value. Use <code>orientation="horizontal"</code> when space allows and the list is short. Disable individual items via <code>disabled</code> on the item, or disable the entire group with the <code>disabled</code> attribute.
+        </p>
+      </section>
+
+      <section class="demo-section">
+        <h2 class="section-title">Basic (vertical)</h2>
+        <div class="demo-col">
+          <app-radio-group
+            label="Size"
+            .items=${radioSizeItems}
+            .value=${radioSizeValue}
+            @radio-change=${(e: CustomEvent) => { radioSizeValue = e.detail.value; rerenderDemo() }}
+          ></app-radio-group>
+        </div>
+      </section>
+
+      <section class="demo-section">
+        <h2 class="section-title">Horizontal</h2>
+        <div class="demo-col">
+          <app-radio-group
+            label="Size"
+            orientation="horizontal"
+            .items=${radioSizeItems}
+            .value=${radioSizeValue}
+            @radio-change=${(e: CustomEvent) => { radioSizeValue = e.detail.value; rerenderDemo() }}
+          ></app-radio-group>
+        </div>
+      </section>
+
+      <section class="demo-section">
+        <h2 class="section-title">With disabled option</h2>
+        <div class="demo-col">
+          <app-radio-group
+            label="Plan"
+            .items=${radioPlanItems}
+            .value=${radioPlanValue}
+            @radio-change=${(e: CustomEvent) => { radioPlanValue = e.detail.value; rerenderDemo() }}
+          ></app-radio-group>
+        </div>
+      </section>
+
+      <section class="demo-section">
+        <h2 class="section-title">Disabled group</h2>
+        <div class="demo-col">
+          <app-radio-group
+            label="Size (disabled)"
+            disabled
+            .items=${radioSizeItems}
+            value="md"
+          ></app-radio-group>
+        </div>
+      </section>
+
+      <section class="demo-section">
+        <h2 class="section-title">Validation</h2>
+        <div class="demo-row">
+          <app-radio-group
+            label="Required field"
+            state="invalid"
+            error-message="Please select an option"
+            .items=${radioSizeItems}
+            .value=${radioValidationValue}
+            @radio-change=${(e: CustomEvent) => { radioValidationValue = e.detail.value; rerenderDemo() }}
+          ></app-radio-group>
+          <app-radio-group
+            label="Confirmed"
+            state="valid"
+            .items=${radioSizeItems}
+            value="sm"
+          ></app-radio-group>
+        </div>
+      </section>
+
+      <section class="demo-section">
+        <h2 class="section-title">Properties</h2>
+        <div class="props-table">
+          <div class="prop-row prop-row--header">
+            <span>Property</span><span>Type</span><span>Default</span><span>Description</span>
+          </div>
+          <div class="prop-row"><span><code>items</code></span><span><code>RadioGroupItem[]</code></span><span><code>[]</code></span><span>Array of options: <code>{ label, value, disabled? }</code>.</span></div>
+          <div class="prop-row"><span><code>value</code></span><span><code>string</code></span><span><code>''</code></span><span>Currently selected value.</span></div>
+          <div class="prop-row"><span><code>label</code></span><span><code>string</code></span><span><code>''</code></span><span>Visible group label rendered above the options.</span></div>
+          <div class="prop-row"><span><code>name</code></span><span><code>string</code></span><span><code>''</code></span><span>Form field name.</span></div>
+          <div class="prop-row"><span><code>disabled</code></span><span><code>boolean</code></span><span><code>false</code></span><span>Disables the entire group.</span></div>
+          <div class="prop-row"><span><code>orientation</code></span><span><code>'vertical' | 'horizontal'</code></span><span><code>'vertical'</code></span><span>Layout direction of the radio options.</span></div>
+          <div class="prop-row"><span><code>state</code></span><span><code>'default' | 'valid' | 'invalid'</code></span><span><code>'default'</code></span><span>Validation visual state.</span></div>
+          <div class="prop-row"><span><code>error-message</code></span><span><code>string</code></span><span><code>''</code></span><span>Error text shown below the group when state is <code>'invalid'</code>.</span></div>
+          <div class="prop-row"><span><code>onChange</code></span><span><code>(e: CustomEvent&lt;{ value: string }&gt;) => void</code></span><span>—</span><span>Optional callback; set via property.</span></div>
+        </div>
+      </section>
+
+      <section class="demo-section">
+        <h2 class="section-title">Events</h2>
+        <div class="props-table">
+          <div class="prop-row prop-row--header"><span>Event</span><span colspan="3">Detail</span></div>
+          <div class="prop-row"><span><code>radio-change</code></span><span><code>{ value: string }</code> — fired when the selected option changes.</span></div>
+        </div>
+      </section>
+
+      <section class="demo-section">
+        <h2 class="section-title">Keyboard</h2>
+        <div class="props-table">
+          <div class="prop-row prop-row--header"><span>Key</span><span colspan="3">Action</span></div>
+          <div class="prop-row"><span><code>Tab</code></span><span>Move focus into / out of the radio group.</span></div>
+          <div class="prop-row"><span><code>Arrow Up / Left</code></span><span>Select the previous enabled option (wraps).</span></div>
+          <div class="prop-row"><span><code>Arrow Down / Right</code></span><span>Select the next enabled option (wraps).</span></div>
+          <div class="prop-row"><span><code>Space / Enter</code></span><span>Select the focused option.</span></div>
+        </div>
+      </section>
+    </div>
+  `
+}
+
+function renderCardPage() {
+  return html`
+    <div class="page-content">
+      <div class="page-header">
+        <h1 class="page-title">Card</h1>
+        <p class="page-desc">Collapsible content container with title, body, and footer slots. Supports elevated, outlined, and filled variants with optional click interaction.</p>
+      </div>
+
+      <section class="demo-section">
+        <h2 class="section-title">Use cases</h2>
+        <p class="section-desc">
+          Use <code>app-card</code> to group related content into a visually distinct container. The title slot is always visible and acts as a toggle to expand or collapse the body. Use the <code>elevated</code> variant for prominent cards, <code>outlined</code> for subtle bordered cards, and <code>filled</code> for subdued background cards. Enable <code>clickable</code> when the entire card should act as an interactive target.
+        </p>
+      </section>
+
+      <section class="demo-section">
+        <h2 class="section-title">Variants</h2>
+        <div style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))">
+          <app-card variant="elevated">
+            <span slot="title"><strong>Elevated</strong></span>
+            <p style="margin:0;color:var(--color-text-muted)">This card uses a subtle box-shadow to create depth. Good for primary content sections.</p>
+          </app-card>
+          <app-card variant="outlined">
+            <span slot="title"><strong>Outlined</strong></span>
+            <p style="margin:0;color:var(--color-text-muted)">This card uses a border for definition. Works well in dense layouts.</p>
+          </app-card>
+          <app-card variant="filled">
+            <span slot="title"><strong>Filled</strong></span>
+            <p style="margin:0;color:var(--color-text-muted)">This card uses an elevated background color. Ideal for secondary content areas.</p>
+          </app-card>
+        </div>
+      </section>
+
+      <section class="demo-section">
+        <h2 class="section-title">Collapsible</h2>
+        <div style="display:grid;gap:1rem;max-width:400px">
+          <app-card variant="outlined">
+            <span slot="title"><strong>Starts open (default)</strong></span>
+            <p style="margin:0;color:var(--color-text-muted)">Click the header to collapse this card. The chevron rotates to indicate state.</p>
+          </app-card>
+          <app-card variant="outlined" .open=${false}>
+            <span slot="title"><strong>Starts closed</strong></span>
+            <p style="margin:0;color:var(--color-text-muted)">This card starts collapsed. Click the header to expand it.</p>
+          </app-card>
+        </div>
+      </section>
+
+      <section class="demo-section">
+        <h2 class="section-title">Clickable</h2>
+        <div style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))">
+          <app-card variant="elevated" clickable .onClick=${() => console.log('Card 1 clicked')}>
+            <span slot="title"><strong>Clickable elevated</strong></span>
+            <p style="margin:0;color:var(--color-text-muted)">Hover to see the shadow lift. Click anywhere on the card body.</p>
+          </app-card>
+          <app-card variant="outlined" clickable .onClick=${() => console.log('Card 2 clicked')}>
+            <span slot="title"><strong>Clickable outlined</strong></span>
+            <p style="margin:0;color:var(--color-text-muted)">Hover to see the border darken.</p>
+          </app-card>
+          <app-card variant="filled" clickable .onClick=${() => console.log('Card 3 clicked')}>
+            <span slot="title"><strong>Clickable filled</strong></span>
+            <p style="margin:0;color:var(--color-text-muted)">Hover to see the background shift.</p>
+          </app-card>
+        </div>
+      </section>
+
+      <section class="demo-section">
+        <h2 class="section-title">With footer</h2>
+        <div style="max-width:400px">
+          <app-card variant="outlined">
+            <span slot="title"><strong>User profile</strong></span>
+            <div>
+              <p style="margin:0 0 0.5rem;color:var(--color-text-muted)">Jane Doe — Software Engineer</p>
+              <p style="margin:0;color:var(--color-text-muted)">Building great things with web components.</p>
+            </div>
+            <div slot="footer" style="display:flex;gap:0.5rem;padding-top:0.75rem;border-top:1px solid var(--color-border)">
+              <app-button label="Edit" variant="secondary"></app-button>
+              <app-button label="Delete" variant="danger"></app-button>
+            </div>
+          </app-card>
+        </div>
+      </section>
+
+      <section class="demo-section">
+        <h2 class="section-title">Properties</h2>
+        <div class="props-table">
+          <div class="prop-row prop-row--header">
+            <span>Property</span><span>Type</span><span>Default</span><span>Description</span>
+          </div>
+          <div class="prop-row"><span><code>variant</code></span><span><code>'elevated' | 'outlined' | 'filled'</code></span><span><code>'elevated'</code></span><span>Visual style variant controlling shadow, border, or background treatment.</span></div>
+          <div class="prop-row"><span><code>open</code></span><span><code>boolean</code></span><span><code>true</code></span><span>Whether the card body is expanded. Toggle by clicking the title row.</span></div>
+          <div class="prop-row"><span><code>clickable</code></span><span><code>boolean</code></span><span><code>false</code></span><span>Enables hover/active effects and click handling on the entire card.</span></div>
+          <div class="prop-row"><span><code>onClick</code></span><span><code>(e: MouseEvent) => void</code></span><span>—</span><span>Optional callback when the card is clicked (only fires when <code>clickable</code> is true). Set via property.</span></div>
+        </div>
+      </section>
+
+      <section class="demo-section">
+        <h2 class="section-title">Slots</h2>
+        <div class="props-table">
+          <div class="prop-row prop-row--header"><span>Slot</span><span>Description</span></div>
+          <div class="prop-row"><span><code>title</code></span><span>Header content, always visible. Clicking it toggles the card body open/closed.</span></div>
+          <div class="prop-row"><span><em>(default)</em></span><span>Main body content. Hidden when the card is collapsed.</span></div>
+          <div class="prop-row"><span><code>footer</code></span><span>Bottom actions area. Hidden when the card is collapsed.</span></div>
+        </div>
+      </section>
+
+      <section class="demo-section">
+        <h2 class="section-title">Events</h2>
+        <div class="props-table">
+          <div class="prop-row prop-row--header"><span>Event</span><span>Detail</span><span>Description</span></div>
+          <div class="prop-row"><span><code>card-toggle</code></span><span><code>{ open: boolean }</code></span><span>Fires when the card is toggled open or closed via the title row.</span></div>
+        </div>
+      </section>
+
+      <section class="demo-section">
+        <h2 class="section-title">Keyboard</h2>
+        <div class="props-table">
+          <div class="prop-row prop-row--header"><span>Key</span><span>Action</span></div>
+          <div class="prop-row"><span><code>Enter / Space</code></span><span>Toggle the card open/closed when the title row is focused.</span></div>
+          <div class="prop-row"><span><code>Tab</code></span><span>Move focus to/from the title toggle button.</span></div>
+        </div>
+      </section>
+    </div>
+  `
+}
+
 function renderPage(page: string) {
   switch (page) {
     case 'button':      return renderButtonPage()
@@ -1386,6 +1682,8 @@ function renderPage(page: string) {
     case 'modal':       return renderModalPage()
     case 'tabs':        return renderTabsPage()
     case 'selector':    return renderSelectorPage()
+    case 'radio-group': return renderRadioGroupPage()
+    case 'card':        return renderCardPage()
     default:            return renderButtonPage()
   }
 }
