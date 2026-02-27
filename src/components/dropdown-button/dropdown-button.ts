@@ -46,17 +46,17 @@ export class DropdownButton extends LitElement {
 
   override connectedCallback() {
     super.connectedCallback()
-    document.addEventListener('click', this._onDocumentClick)
+    document.addEventListener('mousedown', this._onDocumentMousedown, { capture: true })
     document.addEventListener('keydown', this._onDocumentKeydown)
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback()
-    document.removeEventListener('click', this._onDocumentClick)
+    document.removeEventListener('mousedown', this._onDocumentMousedown, { capture: true })
     document.removeEventListener('keydown', this._onDocumentKeydown)
   }
 
-  private _onDocumentClick = (e: MouseEvent) => {
+  private _onDocumentMousedown = (e: MouseEvent) => {
     if (!this._open) return
     if (!e.composedPath().includes(this)) {
       this._open = false

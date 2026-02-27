@@ -42,7 +42,12 @@ export class Button extends LitElement {
   private _onIconSlotChange(e: Event) {
     const slot = e.target as HTMLSlotElement
     const assigned = slot.assignedNodes().filter((n) => n.nodeType === Node.ELEMENT_NODE)
-    this._hasIcon = assigned.length > 0
+    const hasIcon = assigned.length > 0
+    if (this._hasIcon !== hasIcon) {
+      queueMicrotask(() => {
+        this._hasIcon = hasIcon
+      })
+    }
   }
 
   override firstUpdated() {
