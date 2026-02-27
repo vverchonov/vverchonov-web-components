@@ -61,6 +61,7 @@ export class DropdownButton extends LitElement {
     if (!e.composedPath().includes(this)) {
       this._open = false
       this._openPaths = new Set()
+      this._clearPanelInlineDisplay()
     }
   }
 
@@ -68,13 +69,17 @@ export class DropdownButton extends LitElement {
     if (e.key === 'Escape' && this._open) {
       this._open = false
       this._openPaths = new Set()
+      this._clearPanelInlineDisplay()
       this.shadowRoot?.querySelector<HTMLElement>('.trigger')?.focus()
     }
   }
 
   private _toggle() {
     this._open = !this._open
-    if (!this._open) this._openPaths = new Set()
+    if (!this._open) {
+      this._openPaths = new Set()
+      this._clearPanelInlineDisplay()
+    }
     if (this._open) {
       this.updateComplete.then(() => this._positionPanel())
     }
@@ -90,8 +95,8 @@ export class DropdownButton extends LitElement {
     panel.style.visibility = 'hidden'
     panel.style.display = 'block'
     const panelRect = panel.getBoundingClientRect()
-    panel.style.visibility = ''
-    panel.style.display = ''
+    panel.style.removeProperty('visibility')
+    panel.style.removeProperty('display')
 
     const gap = 4
     const spaceBelow = window.innerHeight - triggerRect.bottom - gap
@@ -120,6 +125,14 @@ export class DropdownButton extends LitElement {
     }
     if (left < 0) left = 8
     panel.style.left = `${left}px`
+  }
+
+  private _clearPanelInlineDisplay() {
+    const panel = this.shadowRoot?.querySelector<HTMLElement>('.panel')
+    if (panel) {
+      panel.style.removeProperty('display')
+      panel.style.removeProperty('visibility')
+    }
   }
 
   /**
@@ -227,6 +240,7 @@ export class DropdownButton extends LitElement {
           this._openPaths = new Set()
         } else {
           this._open = false
+          this._clearPanelInlineDisplay()
           this.shadowRoot?.querySelector<HTMLElement>('.trigger')?.focus()
         }
         break
@@ -243,6 +257,7 @@ export class DropdownButton extends LitElement {
     }
     this._open = false
     this._openPaths = new Set()
+    this._clearPanelInlineDisplay()
     this.dispatchEvent(
       new CustomEvent<DropdownSelectEventDetail>('dropdown-select', {
         detail: { item, value: item.value },

@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig, type Plugin } from 'vite'
 import { resolve, dirname } from 'node:path'
 import { readFileSync, readdirSync } from 'node:fs'
@@ -113,4 +114,10 @@ export default defineConfig(({ command }) => ({
           include: ['lit', 'lit/decorators.js'],
         },
       }),
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    setupFiles: ['./src/test/setup.ts'],
+  },
 }))
