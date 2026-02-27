@@ -1,10 +1,48 @@
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import { resolve, dirname } from 'node:path'
-import { readdirSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import swc from 'vite-plugin-swc-transform'
 import tailwindcss from '@tailwindcss/vite'
 import dts from 'vite-plugin-dts'
+
+function virtualThemeInject(): Plugin {
+  const virtualId = 'virtual:theme-inject'
+  const __dirname = dirname(fileURLToPath(import.meta.url))
+  return {
+    name: 'virtual-theme-inject',
+    resolveId(id) {
+      return id === virtualId ? virtualId : null
+    },
+    load(id) {
+      if (id !== virtualId) return null
+      const source = readFileSync(
+        resolve(__dirname, 'src/styles/theme.css'),
+        'utf8',
+      )
+      const css = source
+        .replace(/\/\*\*[\s\S]*?\*\/\s*/, '')
+        .replace('@theme {', ':root {')
+      return `export default ${JSON.stringify(css)}`
+    },
+  }
+}
+
+function emitThemeCss(): Plugin {
+  return {
+    name: 'emit-theme-css',
+    generateBundle() {
+      const source = readFileSync(
+        resolve(dirname(fileURLToPath(import.meta.url)), 'src/styles/theme.css'),
+        'utf8',
+      )
+      const css = source
+        .replace(/\/\*\*[\s\S]*?\*\/\s*/, '')
+        .replace('@theme {', ':root {')
+      this.emitFile({ type: 'asset', fileName: 'theme.css', source: css })
+    },
+  }
+}
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const componentsDir = resolve(__dirname, 'src/components')
@@ -29,6 +67,7 @@ const libEntries = {
 
 export default defineConfig(({ command }) => ({
   plugins: [
+    virtualThemeInject(),
     tailwindcss(),
     // SWC transforms .ts with legacy decorators so Lit @customElement/@property work in dev and build
     swc({
@@ -50,6 +89,7 @@ export default defineConfig(({ command }) => ({
             exclude: ['src/demo.ts'],
             outDir: 'dist',
           }),
+          emitThemeCss(),
         ]
       : []),
   ],

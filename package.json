@@ -1,6 +1,6 @@
 {
   "name": "@vverchonov/web-components",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "type": "module",
   "publishConfig": {
     "access": "public"
@@ -23,7 +23,8 @@
     "./dist/tabs.js",
     "./dist/selector.js",
     "./dist/card.js",
-    "./dist/radio-group.js"
+    "./dist/radio-group.js",
+    "./dist/theme.css"
   ],
   "files": [
     "dist"
@@ -139,7 +140,8 @@
     "./react/radio-group": {
       "types": "./dist/react/radio-group.d.ts",
       "import": "./dist/react/radio-group.js"
-    }
+    },
+    "./theme.css": "./dist/theme.css"
   },
   "peerDependencies": {
     "lit": "^3.0.0",
