@@ -94,9 +94,7 @@ describe('DropdownButton (React)', () => {
         detail: expect.objectContaining({ value: 'edit' }),
       })
     )
-    const panel = getPanel()
-    expect(panel?.classList.contains('is-open')).toBe(false)
-    expect(panel?.style.display).not.toBe('block')
+    expect(getPanel()).toBeNull()
     unmount()
   })
 
@@ -115,9 +113,7 @@ describe('DropdownButton (React)', () => {
     const outsideButton = screen.getByRole('button', { name: 'Outside' })
     await user.click(outsideButton)
 
-    const panel = getPanel()
-    expect(panel?.classList.contains('is-open')).toBe(false)
-    expect(panel?.style.display).not.toBe('block')
+    expect(getPanel()).toBeNull()
   })
 
   it('closes panel on Escape', async () => {
@@ -129,9 +125,7 @@ describe('DropdownButton (React)', () => {
 
     await user.keyboard('{Escape}')
 
-    const panel = getPanel()
-    expect(panel?.classList.contains('is-open')).toBe(false)
-    expect(panel?.style.display).not.toBe('block')
+    expect(getPanel()).toBeNull()
   })
 
   it('renders menu items', async () => {

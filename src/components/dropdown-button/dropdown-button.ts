@@ -61,7 +61,6 @@ export class DropdownButton extends LitElement {
     if (!e.composedPath().includes(this)) {
       this._open = false
       this._openPaths = new Set()
-      this._clearPanelInlineDisplay()
     }
   }
 
@@ -69,17 +68,13 @@ export class DropdownButton extends LitElement {
     if (e.key === 'Escape' && this._open) {
       this._open = false
       this._openPaths = new Set()
-      this._clearPanelInlineDisplay()
       this.shadowRoot?.querySelector<HTMLElement>('.trigger')?.focus()
     }
   }
 
   private _toggle() {
     this._open = !this._open
-    if (!this._open) {
-      this._openPaths = new Set()
-      this._clearPanelInlineDisplay()
-    }
+    if (!this._open) this._openPaths = new Set()
     if (this._open) {
       this.updateComplete.then(() => this._positionPanel())
     }
@@ -125,14 +120,6 @@ export class DropdownButton extends LitElement {
     }
     if (left < 0) left = 8
     panel.style.left = `${left}px`
-  }
-
-  private _clearPanelInlineDisplay() {
-    const panel = this.shadowRoot?.querySelector<HTMLElement>('.panel')
-    if (panel) {
-      panel.style.removeProperty('display')
-      panel.style.removeProperty('visibility')
-    }
   }
 
   /**
@@ -240,7 +227,6 @@ export class DropdownButton extends LitElement {
           this._openPaths = new Set()
         } else {
           this._open = false
-          this._clearPanelInlineDisplay()
           this.shadowRoot?.querySelector<HTMLElement>('.trigger')?.focus()
         }
         break
@@ -257,7 +243,6 @@ export class DropdownButton extends LitElement {
     }
     this._open = false
     this._openPaths = new Set()
-    this._clearPanelInlineDisplay()
     this.dispatchEvent(
       new CustomEvent<DropdownSelectEventDetail>('dropdown-select', {
         detail: { item, value: item.value },
@@ -331,13 +316,17 @@ export class DropdownButton extends LitElement {
         <span class="label">${this.label}</span>
         <span class="chevron" aria-hidden="true">${CHEVRON_SVG}</span>
       </button>
-      <div
-        class="panel ${this._open ? 'is-open' : ''}"
-        role="menu"
-        @keydown=${this._onPanelKeydown}
-      >
-        ${this._renderMenu(this.items)}
-      </div>
+      ${this._open
+        ? html`
+            <div
+              class="panel is-open"
+              role="menu"
+              @keydown=${this._onPanelKeydown}
+            >
+              ${this._renderMenu(this.items)}
+            </div>
+          `
+        : nothing}
     `
   }
 }
