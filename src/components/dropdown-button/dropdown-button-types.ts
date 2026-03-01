@@ -1,24 +1,34 @@
 import type { TemplateResult } from 'lit'
 
-/** Direction the dropdown panel opens relative to the trigger. */
-export type DropdownPlacement = 'bottom' | 'top'
-
-/** A single item (or parent of nested items) in a dropdown menu. */
+/** A single menu item in `<app-dropdown-button>`. */
 export interface DropdownItem {
   /** Visible label text. */
   label: string
-  /** Value emitted in the `dropdown-select` event. */
+  /** Optional value identifying this item; emitted in `dropdown-select` detail. */
   value?: string
-  /** Per-item icon: a slot name string or an inline Lit TemplateResult. */
-  icon?: string | TemplateResult
-  /** Nested child items; renders an inline sub-menu when present. */
-  children?: DropdownItem[]
+  /** Optional icon (Lit TemplateResult) shown before the label. */
+  icon?: TemplateResult
+  /** When true the item cannot be selected. */
+  disabled?: boolean
+  /** Group key — matches `DropdownGroup.key` for visual grouping. */
+  group?: string
 }
+
+/** Defines a named group for visually grouping dropdown items. */
+export interface DropdownGroup {
+  /** Unique group identifier referenced by `DropdownItem.group`. */
+  key: string
+  /** Visible group header label. */
+  label: string
+}
+
+/** Preferred placement direction for the dropdown panel. */
+export type DropdownPlacement = 'bottom' | 'top'
 
 /** Detail payload for the `dropdown-select` custom event. */
 export interface DropdownSelectEventDetail {
-  /** The selected item object. */
+  /** The selected item. */
   item: DropdownItem
-  /** Shorthand for `item.value`. */
+  /** The item's value, if defined. */
   value?: string
 }

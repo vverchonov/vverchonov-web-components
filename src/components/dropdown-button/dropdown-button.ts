@@ -1,332 +1,375 @@
 import { LitElement, html, nothing, unsafeCSS } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { repeat } from 'lit/directives/repeat.js'
-import type { TemplateResult } from 'lit'
 import dropdownButtonStyles from './dropdown-button.css?inline'
-import type { DropdownItem, DropdownSelectEventDetail, DropdownPlacement } from './dropdown-button-types'
+import type {
+  DropdownItem,
+  DropdownGroup,
+  DropdownPlacement,
+  DropdownSelectEventDetail,
+} from './dropdown-button-types'
 
 const CHEVRON_SVG = html`
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+       fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+       stroke-linejoin="round" aria-hidden="true">
     <polyline points="6 9 12 15 18 9"></polyline>
   </svg>
 `
 
+let _uidCounter = 0
+
 /**
- * Button that opens a dropdown menu with nested sub-menu support.
+ * Button that opens a menu of selectable actions, with optional icons and grouped items.
  *
  * @tag app-dropdown-button
- * @slot icon - Optional icon shown in the trigger button.
- * @fires dropdown-select - Fired when a leaf item is selected. Detail: `{ item, value }`.
+ * @slot icon - Optional icon in the trigger button (e.g. ellipsis for "More"). Shown before the label.
+ * @fires dropdown-select - Fired when a menu item is chosen. Detail: `{ item, value? }`.
  */
 @customElement('app-dropdown-button')
 export class DropdownButton extends LitElement {
   static override styles = [unsafeCSS(dropdownButtonStyles)]
 
-  /** Text label displayed in the trigger button. */
+  private readonly _uid = `app-dropdown-button-${++_uidCounter}`
+
+  /** Trigger button text. Omit or leave empty for icon-only trigger when using `slot="icon"`. */
   @property({ type: String })
   label = ''
 
-  /** Preferred direction for the dropdown panel. Auto-flips when insufficient viewport space. */
+  /** Preferred direction for the panel. Automatically flips when there is not enough viewport space. */
   @property({ type: String })
   placement: DropdownPlacement = 'bottom'
 
-  /** Menu items (supports nested `children` for sub-menus). */
+  /** Menu items: `{ label, value?, icon?, group?, disabled? }`. Set via property. */
   @property({ attribute: false })
   items: DropdownItem[] = []
 
-  @state() private _open = false
+  /** Optional group definitions for visually grouping items. */
+  @property({ attribute: false })
+  groups: DropdownGroup[] = []
 
-  /**
-   * Tracks which parent-item paths have their inline submenus expanded.
-   * Paths use dash-separated indices, e.g. "1" for the second top-level item,
-   * "1-0" for its first child, etc.
-   * We always assign a new Set so Lit detects the change.
-   */
-  @state() private _openPaths = new Set<string>()
+  @state() private _open = false
+  @state() private _focusedIndex = -1
+  @state() private _hasIcon = false
 
   override connectedCallback() {
     super.connectedCallback()
-    document.addEventListener('mousedown', this._onDocumentMousedown, { capture: true })
+    document.addEventListener('click', this._onDocumentClick)
     document.addEventListener('keydown', this._onDocumentKeydown)
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback()
-    document.removeEventListener('mousedown', this._onDocumentMousedown, { capture: true })
+    document.removeEventListener('click', this._onDocumentClick)
     document.removeEventListener('keydown', this._onDocumentKeydown)
   }
 
-  private _onDocumentMousedown = (e: MouseEvent) => {
-    if (!this._open) return
-    if (!e.composedPath().includes(this)) {
-      this._open = false
-      this._openPaths = new Set()
+  /* ── Helpers ──────────────────────────────────────────────────────────── */
+
+  /**
+   * Returns items organized by group.
+   * Ungrouped items come first, then each group in the order defined by `this.groups`.
+   */
+  private _getGroupedItems(): Array<{ group: DropdownGroup | null; items: DropdownItem[] }> {
+    if (this.groups.length === 0) {
+      return [{ group: null, items: this.items }]
     }
+
+    const ungrouped: DropdownItem[] = []
+    const map = new Map<string, DropdownItem[]>()
+    for (const g of this.groups) map.set(g.key, [])
+
+    for (const item of this.items) {
+      if (item.group && map.has(item.group)) {
+        map.get(item.group)!.push(item)
+      } else {
+        ungrouped.push(item)
+      }
+    }
+
+    const result: Array<{ group: DropdownGroup | null; items: DropdownItem[] }> = []
+    if (ungrouped.length) result.push({ group: null, items: ungrouped })
+    for (const g of this.groups) {
+      const items = map.get(g.key)!
+      if (items.length) result.push({ group: g, items })
+    }
+    return result
   }
 
-  private _onDocumentKeydown = (e: KeyboardEvent) => {
-    if (e.key === 'Escape' && this._open) {
-      this._open = false
-      this._openPaths = new Set()
-      this.shadowRoot?.querySelector<HTMLElement>('.trigger')?.focus()
-    }
+  /** Flat list of selectable items for keyboard navigation (excludes disabled). */
+  private get _navigableItems(): DropdownItem[] {
+    return this.items.filter((o) => !o.disabled)
   }
+
+  /* ── Selection ─────────────────────────────────────────────────────────── */
+
+  private _select(item: DropdownItem) {
+    if (item.disabled) return
+    this.dispatchEvent(
+      new CustomEvent<DropdownSelectEventDetail>('dropdown-select', {
+        detail: { item, value: item.value },
+        bubbles: true,
+        composed: true,
+      }),
+    )
+    this._close()
+  }
+
+  /* ── Open / close ─────────────────────────────────────────────────────── */
 
   private _toggle() {
-    this._open = !this._open
-    if (!this._open) this._openPaths = new Set()
-    if (this._open) {
-      this.updateComplete.then(() => this._positionPanel())
-    }
+    this._open ? this._close() : this._openPanel()
+  }
+
+  private _openPanel() {
+    this._open = true
+    this._focusedIndex = -1
+    this.updateComplete.then(() => {
+      this._positionPanel()
+    })
+  }
+
+  private _close() {
+    this._open = false
+    this._focusedIndex = -1
+    this.shadowRoot?.querySelector<HTMLElement>('.trigger')?.focus()
   }
 
   private _positionPanel() {
     const trigger = this.shadowRoot?.querySelector<HTMLElement>('.trigger')
     const panel = this.shadowRoot?.querySelector<HTMLElement>('.panel')
     if (!trigger || !panel) return
+    const rect = trigger.getBoundingClientRect()
+    panel.style.minWidth = `${rect.width}px`
+    panel.style.left = `${rect.left}px`
 
-    const triggerRect = trigger.getBoundingClientRect()
+    const spaceBelow = window.innerHeight - rect.bottom - 8
+    const panelHeight = panel.scrollHeight
+    const preferBottom = this.placement === 'bottom'
+    const flipUp = preferBottom && spaceBelow < panelHeight && rect.top > spaceBelow
+    const flipDown = !preferBottom && rect.top < panelHeight && rect.bottom < window.innerHeight - panelHeight
 
-    panel.style.visibility = 'hidden'
-    panel.style.display = 'block'
-    const panelRect = panel.getBoundingClientRect()
-    panel.style.removeProperty('visibility')
-    panel.style.removeProperty('display')
-
-    const gap = 4
-    const spaceBelow = window.innerHeight - triggerRect.bottom - gap
-    const spaceAbove = triggerRect.top - gap
-
-    let effective: DropdownPlacement = this.placement
-    if (effective === 'bottom' && panelRect.height > spaceBelow && spaceAbove > spaceBelow) {
-      effective = 'top'
-    } else if (effective === 'top' && panelRect.height > spaceAbove && spaceBelow > spaceAbove) {
-      effective = 'bottom'
-    }
-
-    panel.style.right = 'auto'
-    panel.style.bottom = 'auto'
-    panel.style.top = 'auto'
-
-    if (effective === 'top') {
-      panel.style.bottom = `${window.innerHeight - triggerRect.top + gap}px`
+    if (flipUp || flipDown) {
+      panel.style.bottom = `${window.innerHeight - rect.top + 4}px`
+      panel.style.top = 'auto'
     } else {
-      panel.style.top = `${triggerRect.bottom + gap}px`
+      panel.style.top = `${rect.bottom + 4}px`
+      panel.style.bottom = 'auto'
     }
-
-    let left = triggerRect.left
-    if (left + panelRect.width > window.innerWidth) {
-      left = window.innerWidth - panelRect.width - 8
-    }
-    if (left < 0) left = 8
-    panel.style.left = `${left}px`
   }
 
-  /**
-   * Toggle an inline submenu open/closed.
-   * Closing a parent also removes all its descendant paths.
-   * Opening a parent closes any sibling at the same depth+parent.
-   */
-  private _toggleSubmenu(path: string) {
-    const next = new Set(this._openPaths)
-    if (next.has(path)) {
-      for (const p of [...next]) {
-        if (p === path || p.startsWith(`${path}-`)) next.delete(p)
-      }
-    } else {
-      const segments = path.split('-')
-      const depth = segments.length
-      const parentPrefix = segments.slice(0, -1).join('-')
-      for (const p of [...next]) {
-        const pSeg = p.split('-')
-        if (pSeg.length === depth && pSeg.slice(0, -1).join('-') === parentPrefix) {
-          for (const d of [...next]) {
-            if (d === p || d.startsWith(`${p}-`)) next.delete(d)
-          }
-        }
-      }
-      next.add(path)
-    }
-    this._openPaths = next
+  /* ── Document listeners ────────────────────────────────────────────────── */
+
+  private _onDocumentClick = (e: MouseEvent) => {
+    if (!this._open) return
+    if (!e.composedPath().includes(this)) this._close()
   }
+
+  private _onDocumentKeydown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape' && this._open) {
+      this._close()
+      this.shadowRoot?.querySelector<HTMLElement>('.trigger')?.focus()
+    }
+  }
+
+  /* ── Keyboard navigation ───────────────────────────────────────────────── */
 
   private _onTriggerKeydown(e: KeyboardEvent) {
-    if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault()
-      if (!this._open) {
-        this._open = true
-        this._openPaths = new Set()
-        this.updateComplete.then(() => {
-          this._positionPanel()
-          this.shadowRoot?.querySelector<HTMLElement>('[role="menuitem"]')?.focus()
-        })
-      }
+    switch (e.key) {
+      case 'ArrowDown':
+      case 'Enter':
+      case ' ':
+        e.preventDefault()
+        if (!this._open && this.items.length > 0) {
+          this._openPanel()
+          this.updateComplete.then(() => {
+            this._focusedIndex = 0
+            this._scrollToFocused()
+          })
+        } else if (this._open) {
+          this._onPanelKeydown(e)
+        }
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        if (!this._open && this.items.length > 0) {
+          this._openPanel()
+          this.updateComplete.then(() => {
+            this._focusedIndex = this._navigableItems.length - 1
+            this._scrollToFocused()
+          })
+        } else if (this._open) {
+          this._onPanelKeydown(e)
+        }
+        break
     }
   }
 
   private _onPanelKeydown(e: KeyboardEvent) {
-    const target = e.target as HTMLElement
-    if (target.getAttribute('role') !== 'menuitem') return
-
-    const wrapper = target.closest<HTMLElement>('.menu-item-wrapper')
-    const path = wrapper?.getAttribute('data-path') ?? ''
-    const currentMenu = target.closest<HTMLElement>('.menu')
-    const menuItems = currentMenu
-      ? (Array.from(currentMenu.children)
-          .map(li => li.querySelector<HTMLElement>(':scope > [role="menuitem"]'))
-          .filter(Boolean) as HTMLElement[])
-      : []
-    const hasChildren = Boolean(wrapper?.querySelector(':scope > .submenu'))
+    const nav = this._navigableItems
+    if (!nav.length) return
 
     switch (e.key) {
       case 'ArrowDown': {
         e.preventDefault()
-        const i = menuItems.indexOf(target)
-        if (i < menuItems.length - 1) menuItems[i + 1].focus()
+        this._focusedIndex =
+          this._focusedIndex < nav.length - 1 ? this._focusedIndex + 1 : 0
+        this._scrollToFocused()
         break
       }
       case 'ArrowUp': {
         e.preventDefault()
-        const i = menuItems.indexOf(target)
-        if (i > 0) menuItems[i - 1].focus()
+        this._focusedIndex =
+          this._focusedIndex > 0 ? this._focusedIndex - 1 : nav.length - 1
+        this._scrollToFocused()
         break
       }
-      case 'ArrowRight':
-      case 'Enter': {
-        if (hasChildren) {
-          e.preventDefault()
-          if (!this._openPaths.has(path)) {
-            this._toggleSubmenu(path)
-            this.updateComplete.then(() => {
-              const firstInSub = wrapper?.querySelector<HTMLElement>('.submenu [role="menuitem"]')
-              firstInSub?.focus()
-            })
-          }
-        }
-        break
-      }
-      case 'ArrowLeft': {
+      case 'Home': {
         e.preventDefault()
-        if (path.includes('-')) {
-          const parentPath = path.split('-').slice(0, -1).join('-')
-          const next = new Set(this._openPaths)
-          for (const p of [...next]) {
-            if (p === parentPath || p.startsWith(`${parentPath}-`)) next.delete(p)
-          }
-          this._openPaths = next
-          const parentWrapper = this.shadowRoot?.querySelector(
-            `.menu-item-wrapper[data-path="${parentPath}"]`
-          )
-          parentWrapper?.querySelector<HTMLElement>(':scope > [role="menuitem"]')?.focus()
+        this._focusedIndex = 0
+        this._scrollToFocused()
+        break
+      }
+      case 'End': {
+        e.preventDefault()
+        this._focusedIndex = nav.length - 1
+        this._scrollToFocused()
+        break
+      }
+      case 'Enter':
+      case ' ': {
+        e.preventDefault()
+        if (this._focusedIndex >= 0 && this._focusedIndex < nav.length) {
+          this._select(nav[this._focusedIndex])
         }
         break
       }
       case 'Escape': {
         e.preventDefault()
-        if (this._openPaths.size > 0) {
-          this._openPaths = new Set()
-        } else {
-          this._open = false
-          this.shadowRoot?.querySelector<HTMLElement>('.trigger')?.focus()
-        }
+        this._close()
         break
       }
-      default:
-        break
     }
   }
 
-  private _onItemClick(item: DropdownItem, path: string) {
-    if (item.children?.length) {
-      this._toggleSubmenu(path)
-      return
-    }
-    this._open = false
-    this._openPaths = new Set()
-    this.dispatchEvent(
-      new CustomEvent<DropdownSelectEventDetail>('dropdown-select', {
-        detail: { item, value: item.value },
-        bubbles: true,
-        composed: true,
-      })
-    )
+  private _scrollToFocused() {
+    this.updateComplete.then(() => {
+      const focused = this.shadowRoot?.querySelector('.item.is-focused')
+      focused?.scrollIntoView({ block: 'nearest' })
+    })
   }
+
+  /* ── Slot change ────────────────────────────────────────────────────────── */
+
+  private _onIconSlotChange(e: Event) {
+    const slot = e.target as HTMLSlotElement
+    const assigned = slot.assignedNodes().filter((n) => n.nodeType === Node.ELEMENT_NODE)
+    const hasIcon = assigned.length > 0
+    if (this._hasIcon !== hasIcon) {
+      queueMicrotask(() => {
+        this._hasIcon = hasIcon
+      })
+    }
+  }
+
+  override firstUpdated() {
+    const slot = this.renderRoot.querySelector<HTMLSlotElement>('slot[name="icon"]')
+    if (slot) {
+      const assigned = slot.assignedNodes().filter((n) => n.nodeType === Node.ELEMENT_NODE)
+      this._hasIcon = assigned.length > 0
+    }
+  }
+
+  /* ── Render helpers ────────────────────────────────────────────────────── */
 
   private _renderItemIcon(item: DropdownItem) {
-    if (item.icon == null) return html``
-    if (typeof item.icon === 'string') {
-      return html`<span class="item-icon"><slot name=${`icon-${item.icon}`}></slot></span>`
-    }
+    if (item.icon == null) return nothing
     return html`<span class="item-icon">${item.icon}</span>`
   }
 
-  private _renderMenu(items: DropdownItem[], pathPrefix = ''): TemplateResult {
-    return html`
-      <ul class="menu" role="menu">
+  private _renderMenuItems() {
+    const grouped = this._getGroupedItems()
+    const nav = this._navigableItems
+    const hasAny = grouped.some((g) => g.items.length > 0)
+
+    if (!hasAny) {
+      return html`<div class="empty-message">No items</div>`
+    }
+
+    return grouped.map(
+      ({ group, items }) => html`
+        ${group ? html`<div class="group-header" role="presentation">${group.label}</div>` : nothing}
         ${repeat(
           items,
-          (item, i) => `${pathPrefix}-${i}-${item.label}`,
-          (item, i): TemplateResult => {
-            const path = pathPrefix ? `${pathPrefix}-${i}` : String(i)
-            const hasChildren = Boolean(item.children?.length)
-            const isExpanded = this._openPaths.has(path)
+          (o) => o.value ?? o.label,
+          (o) => {
+            const navIdx = nav.findIndex(
+              (n) => (n.value ?? n.label) === (o.value ?? o.label),
+            )
+            const focused = navIdx === this._focusedIndex
             return html`
-              <li class="menu-item-wrapper" data-path=${path}>
-                <button
-                  type="button"
-                  role="menuitem"
-                  aria-expanded=${hasChildren ? (isExpanded ? 'true' : 'false') : nothing}
-                  class="menu-item ${hasChildren ? 'has-children' : ''} ${isExpanded ? 'is-expanded' : ''}"
-                  @click=${() => this._onItemClick(item, path)}
-                >
-                  ${this._renderItemIcon(item)}
-                  <span class="item-label">${item.label}</span>
-                  ${hasChildren
-                    ? html`<span class="submenu-indicator" aria-hidden="true">${CHEVRON_SVG}</span>`
-                    : ''}
-                </button>
-                ${hasChildren
-                  ? html`
-                      <ul class="submenu menu ${isExpanded ? 'is-open' : ''}" role="menu">
-                        ${this._renderMenu(item.children!, path)}
-                      </ul>
-                    `
-                  : ''}
-              </li>
+              <button
+                type="button"
+                role="menuitem"
+                aria-disabled=${o.disabled ? 'true' : 'false'}
+                id=${`${this._uid}-item-${navIdx}`}
+                class="item ${focused ? 'is-focused' : ''} ${o.disabled ? 'is-disabled' : ''}"
+                ?disabled=${o.disabled}
+                @click=${() => this._select(o)}
+                @mouseenter=${() => {
+                  if (!o.disabled) this._focusedIndex = navIdx
+                }}
+              >
+                ${this._renderItemIcon(o)}
+                <span class="item-label">${o.label}</span>
+              </button>
             `
-          }
+          },
         )}
-      </ul>
-    `
+      `,
+    )
   }
 
+  /* ── Main render ───────────────────────────────────────────────────────── */
+
   override render() {
+    const menuId = `${this._uid}-menu`
+    const nav = this._navigableItems
+    const activeDescendant =
+      this._open && this._focusedIndex >= 0 && this._focusedIndex < nav.length
+        ? `${this._uid}-item-${this._focusedIndex}`
+        : undefined
+
     return html`
-      <button
-        type="button"
-        class="trigger"
-        aria-haspopup="menu"
-        aria-expanded=${this._open ? 'true' : 'false'}
-        @click=${this._toggle}
-        @keydown=${this._onTriggerKeydown}
-      >
-        <span class="icon-wrapper">
-          <slot name="icon"></slot>
-        </span>
-        <span class="label">${this.label}</span>
-        <span class="chevron" aria-hidden="true">${CHEVRON_SVG}</span>
-      </button>
-      ${this._open
-        ? html`
-            <div
-              class="panel is-open"
-              role="menu"
-              @keydown=${this._onPanelKeydown}
-            >
-              ${this._renderMenu(this.items)}
-            </div>
-          `
-        : nothing}
+      <div class="wrapper">
+        <button
+          type="button"
+          class="trigger ${this._open ? 'is-open' : ''} ${this._hasIcon ? 'has-icon' : ''}"
+          aria-haspopup="menu"
+          aria-expanded=${this._open ? 'true' : 'false'}
+          aria-controls=${menuId}
+          aria-label=${this.label || 'Open menu'}
+          @click=${this._toggle}
+          @keydown=${this._onTriggerKeydown}
+        >
+          <span class="icon-wrapper">
+            <slot name="icon" @slotchange=${this._onIconSlotChange}></slot>
+          </span>
+          ${this.label ? html`<span class="label">${this.label}</span>` : nothing}
+          <span class="chevron">${CHEVRON_SVG}</span>
+        </button>
+
+        <div
+          id=${menuId}
+          class="panel ${this._open ? 'is-open' : ''}"
+          role="menu"
+          aria-label=${this.label || 'Menu'}
+          aria-activedescendant=${activeDescendant ?? nothing}
+          @keydown=${this._onPanelKeydown}
+        >
+          <div class="menu-list">${this._renderMenuItems()}</div>
+        </div>
+      </div>
     `
   }
 }

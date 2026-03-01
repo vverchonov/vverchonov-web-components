@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { DropdownButton } from '../dropdown-button' // also registers app-dropdown-button
-import type { DropdownItem } from '../../components/dropdown-button/dropdown-button-types'
+import type { DropdownItem, DropdownGroup } from '../../components/dropdown-button/dropdown-button-types'
 
 const simpleItems: DropdownItem[] = [
   { label: 'Edit', value: 'edit' },
@@ -94,7 +94,7 @@ describe('DropdownButton (React)', () => {
         detail: expect.objectContaining({ value: 'edit' }),
       })
     )
-    expect(getPanel()).toBeNull()
+    expect(getPanel()?.classList.contains('is-open')).toBe(false)
     unmount()
   })
 
@@ -113,7 +113,7 @@ describe('DropdownButton (React)', () => {
     const outsideButton = screen.getByRole('button', { name: 'Outside' })
     await user.click(outsideButton)
 
-    expect(getPanel()).toBeNull()
+    expect(getPanel()?.classList.contains('is-open')).toBe(false)
   })
 
   it('closes panel on Escape', async () => {
@@ -125,7 +125,7 @@ describe('DropdownButton (React)', () => {
 
     await user.keyboard('{Escape}')
 
-    expect(getPanel()).toBeNull()
+    expect(getPanel()?.classList.contains('is-open')).toBe(false)
   })
 
   it('renders menu items', async () => {
@@ -143,5 +143,41 @@ describe('DropdownButton (React)', () => {
     expect(menuItems[0]?.textContent).toContain('Edit')
     expect(menuItems[1]?.textContent).toContain('Delete')
     unmount()
+  })
+
+  it('renders grouped items', async () => {
+    const user = userEvent.setup()
+    const groupedItems: DropdownItem[] = [
+      { label: 'Edit', value: 'edit', group: 'actions' },
+      { label: 'Delete', value: 'delete', group: 'actions' },
+      { label: 'Settings', value: 'settings', group: 'system' },
+    ]
+    const groups: DropdownGroup[] = [
+      { key: 'actions', label: 'Actions' },
+      { key: 'system', label: 'System' },
+    ]
+    const host = document.createElement('app-dropdown-button') as HTMLElement & {
+      items: DropdownItem[]
+      groups: DropdownGroup[]
+    }
+    host.items = groupedItems
+    host.groups = groups
+    document.body.appendChild(host)
+    await (host as any).updateComplete
+
+    const trigger = getTrigger()
+    await user.click(trigger!)
+
+    const menuItems = getMenuItems()
+    expect(menuItems).toHaveLength(3)
+    expect(menuItems[0]?.textContent).toContain('Edit')
+    expect(menuItems[1]?.textContent).toContain('Delete')
+    expect(menuItems[2]?.textContent).toContain('Settings')
+
+    const panel = getPanel()
+    expect(panel?.textContent).toContain('Actions')
+    expect(panel?.textContent).toContain('System')
+
+    host.remove()
   })
 })

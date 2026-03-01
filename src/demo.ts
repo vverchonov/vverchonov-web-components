@@ -13,7 +13,7 @@ import './components/radio-group'
 import './components/card'
 import { html, render } from 'lit'
 import type { ColumnDef } from './components/table'
-import type { DropdownItem } from './components/dropdown-button'
+import type { DropdownItem, DropdownGroup } from './components/dropdown-button'
 import type { MenuItem } from './components/menu'
 import type { ToggleChangeEventDetail } from './components/toggle'
 import type { SelectorOption, SelectorGroup } from './components/selector'
@@ -131,10 +131,16 @@ const dropdownActions: DropdownItem[] = [
   { label: 'Delete',    value: 'delete' },
 ]
 
-const dropdownWithSubmenus: DropdownItem[] = [
-  { label: 'New',      value: 'new',    children: [{ label: 'File', value: 'new-file' }, { label: 'Folder', value: 'new-folder' }] },
-  { label: 'Export',   value: 'export', children: [{ label: 'PDF', value: 'pdf' }, { label: 'CSV', value: 'csv' }] },
-  { label: 'Settings', value: 'settings' },
+const dropdownGrouped: DropdownItem[] = [
+  { label: 'Edit', value: 'edit', group: 'actions' },
+  { label: 'Delete', value: 'delete', group: 'actions' },
+  { label: 'Duplicate', value: 'duplicate', group: 'actions' },
+  { label: 'Settings', value: 'settings', group: 'system' },
+]
+
+const dropdownGroups: DropdownGroup[] = [
+  { key: 'actions', label: 'Actions' },
+  { key: 'system', label: 'System' },
 ]
 
 const dropdownWithIcons: DropdownItem[] = [
@@ -340,13 +346,13 @@ function renderDropdownPage() {
     <div class="page-content">
       <div class="page-header">
         <h1 class="page-title">Dropdown Button</h1>
-        <p class="page-desc">Button that opens a menu of selectable actions, with optional icons and nested submenus.</p>
+        <p class="page-desc">Button that opens a menu of selectable actions, with optional icons and grouped items.</p>
       </div>
 
       <section class="demo-section">
         <h2 class="section-title">Use cases</h2>
         <p class="section-desc">
-          Use <code>app-dropdown-button</code> for action menus (e.g. row actions, toolbar "More" menus, export or share options). It supports flat lists, nested submenus, and items with icons. Prefer it over <code>app-menu</code> when the trigger is inline (e.g. next to a table row); use <code>app-menu</code> for persistent sidebar navigation.
+          Use <code>app-dropdown-button</code> for action menus (e.g. row actions, toolbar "More" menus, export or share options). It supports flat lists, grouped items, and items with icons. Prefer it over <code>app-menu</code> when the trigger is inline (e.g. next to a table row); use <code>app-menu</code> for persistent sidebar navigation.
         </p>
       </section>
 
@@ -362,11 +368,12 @@ function renderDropdownPage() {
       </section>
 
       <section class="demo-section">
-        <h2 class="section-title">Nested submenus</h2>
+        <h2 class="section-title">Grouped items</h2>
         <div class="demo-row">
           <app-dropdown-button
             label="More"
-            .items=${dropdownWithSubmenus}
+            .items=${dropdownGrouped}
+            .groups=${dropdownGroups}
             @dropdown-select=${(e: Event) => console.log('dropdown-select:', (e as CustomEvent).detail)}
           ></app-dropdown-button>
         </div>
@@ -398,7 +405,8 @@ function renderDropdownPage() {
             ></app-dropdown-button>
             <app-dropdown-button
               label="Also flips"
-              .items=${dropdownWithSubmenus}
+              .items=${dropdownGrouped}
+              .groups=${dropdownGroups}
               @dropdown-select=${(e: Event) => console.log('dropdown-select:', (e as CustomEvent).detail)}
             ></app-dropdown-button>
           </div>
@@ -413,7 +421,8 @@ function renderDropdownPage() {
           </div>
           <div class="prop-row"><span><code>label</code></span><span><code>string</code></span><span><code>''</code></span><span>Trigger button text. Omit or leave empty for icon-only trigger when using <code>slot="icon"</code>.</span></div>
           <div class="prop-row"><span><code>placement</code></span><span><code>'bottom' | 'top'</code></span><span><code>'bottom'</code></span><span>Preferred direction for the panel. Automatically flips to the opposite side when there is not enough viewport space.</span></div>
-          <div class="prop-row"><span><code>items</code></span><span><code>DropdownItem[]</code></span><span><code>[]</code></span><span>Menu items: <code>{ label, value?, icon?, children? }</code>. <code>children</code> creates nested submenus. Set via property.</span></div>
+          <div class="prop-row"><span><code>items</code></span><span><code>DropdownItem[]</code></span><span><code>[]</code></span><span>Menu items: <code>{ label, value?, icon?, group?, disabled? }</code>. Set via property.</span></div>
+          <div class="prop-row"><span><code>groups</code></span><span><code>DropdownGroup[]</code></span><span><code>[]</code></span><span>Optional group definitions for visually grouping items. <code>{ key, label }</code>.</span></div>
         </div>
       </section>
 
@@ -429,7 +438,7 @@ function renderDropdownPage() {
         <h2 class="section-title">Events</h2>
         <div class="props-table">
           <div class="prop-row prop-row--header"><span>Event</span><span colspan="3">Detail</span></div>
-          <div class="prop-row"><span><code>dropdown-select</code></span><span><code>{ item: DropdownItem, value?: string }</code> — fired when a leaf item is chosen; panel closes. Not fired when opening a parent with children.</span></div>
+          <div class="prop-row"><span><code>dropdown-select</code></span><span><code>{ item: DropdownItem, value?: string }</code> — fired when an item is chosen; panel closes.</span></div>
         </div>
       </section>
     </div>
