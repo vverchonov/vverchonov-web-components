@@ -1,5 +1,5 @@
 export { Button } from './button.ts'
-export { DropdownButton } from './dropdown-button.ts'
+// export { DropdownButton } from './dropdown-button.ts'  // disabled – broken
 export { Input } from './input.ts'
 export { Menu } from './menu.ts'
 export { Modal } from './modal.ts'
@@ -13,7 +13,7 @@ export { FormLayout } from './form-layout.ts'
 export { Layout } from './layout.ts'
 
 export type { ButtonIconPosition, ButtonType } from '../components/button/button-types.ts'
-export type { DropdownItem, DropdownGroup, DropdownSelectEventDetail, DropdownPlacement } from '../components/dropdown-button/dropdown-button-types.ts'
+// export type { DropdownItem, DropdownGroup, DropdownSelectEventDetail, DropdownPlacement } from '../components/dropdown-button/dropdown-button-types.ts'  // disabled
 export type { InputType, InputState } from '../components/input/input-types.ts'
 export type { MenuItem, MenuSelectEventDetail, MenuSearchEventDetail } from '../components/menu/menu-types.ts'
 export type { ModalVariant, ModalSize } from '../components/modal/modal-types.ts'

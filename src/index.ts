@@ -1,6 +1,6 @@
 export { Button } from './components/button'
 export { Table } from './components/table'
-export { DropdownButton } from './components/dropdown-button'
+// export { DropdownButton } from './components/dropdown-button'  // disabled – broken
 export { Menu } from './components/menu'
 export { Layout } from './components/layouts'
 export { FormLayout } from './components/layouts'
@@ -13,7 +13,7 @@ export { Selector } from './components/selector'
 export { Card } from './components/card'
 export type { ButtonIconPosition, ButtonType, ButtonVariant } from './components/button'
 export type { ColumnDef, SortDir, TableSortEvent, TablePageEvent, TableColumnToggleEvent } from './components/table'
-export type { DropdownItem, DropdownGroup, DropdownSelectEventDetail, DropdownPlacement } from './components/dropdown-button'
+// export type { DropdownItem, DropdownGroup, DropdownSelectEventDetail, DropdownPlacement } from './components/dropdown-button'  // disabled
 export type { MenuItem, MenuSelectEventDetail, MenuSearchEventDetail } from './components/menu'
 export type { ToggleIconPosition, ToggleChangeEventDetail } from './components/toggle'
 export type { InputType, InputState } from './components/input'
@@ -27,7 +27,7 @@ export { tailwindBase } from './styles/tailwind-base.ts'
 
 import './components/button'
 import './components/table'
-import './components/dropdown-button'
+// import './components/dropdown-button'  // disabled – broken
 import './components/menu'
 import './components/layouts'
 import './components/toggle'

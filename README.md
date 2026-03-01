@@ -72,7 +72,7 @@ import { Button, Input, Table } from '@vverchonov/web-components/react'
 | `app-modal` | `Modal` | `./modal` | Dialog (info, confirm, form variants) with focus trapping |
 | `app-tabs` | `Tabs` | `./tabs` | Tabbed interface with keyboard navigation |
 | `app-selector` | `Selector` | `./selector` | Dropdown selector (single/multi, searchable, grouped) |
-| `app-dropdown-button` | `DropdownButton` | `./dropdown-button` | Dropdown menu button with nested submenus |
+<!-- | `app-dropdown-button` | `DropdownButton` | `./dropdown-button` | Dropdown menu button (disabled – broken) | -->
 | `app-layout` | `Layout` | `./layouts` | Page layout with sidebar slot |
 | `app-form-layout` | `FormLayout` | `./layouts` | Form shell with multi-step support and column grids |
 | `app-card` | `Card` | `./card` | Collapsible content card (elevated, outlined, filled) |

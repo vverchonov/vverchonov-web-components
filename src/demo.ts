@@ -1,7 +1,7 @@
 import './tailwind.css'
 import './components/button'
 import './components/table'
-import './components/dropdown-button'
+// import './components/dropdown-button'  // disabled – broken
 import './components/menu'
 import './components/layouts'
 import './components/toggle'
@@ -13,7 +13,7 @@ import './components/radio-group'
 import './components/card'
 import { html, render } from 'lit'
 import type { ColumnDef } from './components/table'
-import type { DropdownItem, DropdownGroup } from './components/dropdown-button'
+// import type { DropdownItem, DropdownGroup } from './components/dropdown-button'  // disabled
 import type { MenuItem } from './components/menu'
 import type { ToggleChangeEventDetail } from './components/toggle'
 import type { SelectorOption, SelectorGroup } from './components/selector'
@@ -124,30 +124,20 @@ function simulateFetchPage(page: number) {
 }
 
 // ── Dropdown data ───────────────────────────────────────────────────────────
+// disabled – dropdown-button component broken
 
-const dropdownActions: DropdownItem[] = [
-  { label: 'Edit',      value: 'edit' },
-  { label: 'Duplicate', value: 'duplicate' },
-  { label: 'Delete',    value: 'delete' },
-]
-
-const dropdownGrouped: DropdownItem[] = [
-  { label: 'Edit', value: 'edit', group: 'actions' },
-  { label: 'Delete', value: 'delete', group: 'actions' },
-  { label: 'Duplicate', value: 'duplicate', group: 'actions' },
-  { label: 'Settings', value: 'settings', group: 'system' },
-]
-
-const dropdownGroups: DropdownGroup[] = [
-  { key: 'actions', label: 'Actions' },
-  { key: 'system', label: 'System' },
-]
-
-const dropdownWithIcons: DropdownItem[] = [
-  { label: 'Edit',   value: 'edit',   icon: html`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>` },
-  { label: 'Copy',   value: 'copy',   icon: html`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>` },
-  { label: 'Delete', value: 'delete', icon: html`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>` },
-]
+// const dropdownActions: DropdownItem[] = [
+//   { label: 'Edit',      value: 'edit' },
+//   { label: 'Duplicate', value: 'duplicate' },
+//   { label: 'Delete',    value: 'delete' },
+// ]
+// const dropdownGrouped: DropdownItem[] = [
+//   { label: 'Edit', value: 'edit', group: 'actions' },
+//   { label: 'Delete', value: 'delete', group: 'actions' },
+//   ...
+// ]
+// const dropdownGroups: DropdownGroup[] = [ ... ]
+// const dropdownWithIcons: DropdownItem[] = [ ... ]
 
 // ── Selector data ────────────────────────────────────────────────────────────
 
@@ -215,7 +205,7 @@ let radioValidationValue = ''
 // ── Sidebar menu data ────────────────────────────────────────────────────────
 
 const buttonIcon     = html`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M12 12h.01"/></svg>`
-const dropdownIcon   = html`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 9l4-4 4 4"/><path d="M16 15l-4 4-4-4"/></svg>`
+// const dropdownIcon   = html`...`  // disabled – used by dropdown nav item
 const tableIcon      = html`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>`
 const toggleIcon     = html`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="1" y="8" width="22" height="8" rx="4"/><circle cx="17" cy="12" r="3" fill="currentColor" stroke="none"/></svg>`
 const inputIcon      = html`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M7 12h2m4 0h2"/><line x1="6" y1="9" x2="6" y2="15"/></svg>`
@@ -237,7 +227,7 @@ const sidebarItems: MenuItem[] = [
     icon: componentsGroupIcon,
     children: [
       { label: 'Button',        value: 'button',      icon: buttonIcon      },
-      { label: 'Dropdown',      value: 'dropdown',    icon: dropdownIcon    },
+      // { label: 'Dropdown',      value: 'dropdown',    icon: dropdownIcon    },  // disabled – broken
       { label: 'Input',         value: 'input',       icon: inputIcon       },
       { label: 'Toggle',        value: 'toggle',      icon: toggleIcon      },
       { label: 'Table',         value: 'table',       icon: tableIcon       },
@@ -346,101 +336,8 @@ function renderDropdownPage() {
     <div class="page-content">
       <div class="page-header">
         <h1 class="page-title">Dropdown Button</h1>
-        <p class="page-desc">Button that opens a menu of selectable actions, with optional icons and grouped items.</p>
+        <p class="page-desc" style="color: var(--color-text-muted);">Component temporarily disabled — broken.</p>
       </div>
-
-      <section class="demo-section">
-        <h2 class="section-title">Use cases</h2>
-        <p class="section-desc">
-          Use <code>app-dropdown-button</code> for action menus (e.g. row actions, toolbar "More" menus, export or share options). It supports flat lists, grouped items, and items with icons. Prefer it over <code>app-menu</code> when the trigger is inline (e.g. next to a table row); use <code>app-menu</code> for persistent sidebar navigation.
-        </p>
-      </section>
-
-      <section class="demo-section">
-        <h2 class="section-title">Simple actions</h2>
-        <div class="demo-row">
-          <app-dropdown-button
-            label="Actions"
-            .items=${dropdownActions}
-            @dropdown-select=${(e: Event) => console.log('dropdown-select:', (e as CustomEvent).detail)}
-          ></app-dropdown-button>
-        </div>
-      </section>
-
-      <section class="demo-section">
-        <h2 class="section-title">Grouped items</h2>
-        <div class="demo-row">
-          <app-dropdown-button
-            label="More"
-            .items=${dropdownGrouped}
-            .groups=${dropdownGroups}
-            @dropdown-select=${(e: Event) => console.log('dropdown-select:', (e as CustomEvent).detail)}
-          ></app-dropdown-button>
-        </div>
-      </section>
-
-      <section class="demo-section">
-        <h2 class="section-title">Items with icons</h2>
-        <div class="demo-row">
-          <app-dropdown-button
-            .items=${dropdownWithIcons}
-            @dropdown-select=${(e: Event) => console.log('dropdown-select:', (e as CustomEvent).detail)}
-          >
-            <span slot="icon">⋯</span>
-          </app-dropdown-button>
-        </div>
-      </section>
-
-      <section class="demo-section">
-        <h2 class="section-title">Auto-flip positioning</h2>
-        <p class="section-desc">
-          The dropdown automatically flips above the trigger when there isn't enough viewport space below. Try opening these dropdowns inside the short scrollable container.
-        </p>
-        <div class="demo-row" style="height: 120px; overflow: auto; border: 1px solid var(--color-border); border-radius: var(--radius-card); padding: 0.5rem;">
-          <div style="display: flex; justify-content: space-between; align-items: flex-end; min-height: 200px; padding-top: 140px;">
-            <app-dropdown-button
-              label="Opens above"
-              .items=${dropdownActions}
-              @dropdown-select=${(e: Event) => console.log('dropdown-select:', (e as CustomEvent).detail)}
-            ></app-dropdown-button>
-            <app-dropdown-button
-              label="Also flips"
-              .items=${dropdownGrouped}
-              .groups=${dropdownGroups}
-              @dropdown-select=${(e: Event) => console.log('dropdown-select:', (e as CustomEvent).detail)}
-            ></app-dropdown-button>
-          </div>
-        </div>
-      </section>
-
-      <section class="demo-section">
-        <h2 class="section-title">Properties</h2>
-        <div class="props-table">
-          <div class="prop-row prop-row--header">
-            <span>Property</span><span>Type</span><span>Default</span><span>Description</span>
-          </div>
-          <div class="prop-row"><span><code>label</code></span><span><code>string</code></span><span><code>''</code></span><span>Trigger button text. Omit or leave empty for icon-only trigger when using <code>slot="icon"</code>.</span></div>
-          <div class="prop-row"><span><code>placement</code></span><span><code>'bottom' | 'top'</code></span><span><code>'bottom'</code></span><span>Preferred direction for the panel. Automatically flips to the opposite side when there is not enough viewport space.</span></div>
-          <div class="prop-row"><span><code>items</code></span><span><code>DropdownItem[]</code></span><span><code>[]</code></span><span>Menu items: <code>{ label, value?, icon?, group?, disabled? }</code>. Set via property.</span></div>
-          <div class="prop-row"><span><code>groups</code></span><span><code>DropdownGroup[]</code></span><span><code>[]</code></span><span>Optional group definitions for visually grouping items. <code>{ key, label }</code>.</span></div>
-        </div>
-      </section>
-
-      <section class="demo-section">
-        <h2 class="section-title">Slots</h2>
-        <div class="props-table">
-          <div class="prop-row prop-row--header"><span>Slot</span><span colspan="3">Description</span></div>
-          <div class="prop-row"><span><code>icon</code></span><span>Optional icon in the trigger button (e.g. ellipsis for "More"). Shown before the label.</span></div>
-        </div>
-      </section>
-
-      <section class="demo-section">
-        <h2 class="section-title">Events</h2>
-        <div class="props-table">
-          <div class="prop-row prop-row--header"><span>Event</span><span colspan="3">Detail</span></div>
-          <div class="prop-row"><span><code>dropdown-select</code></span><span><code>{ item: DropdownItem, value?: string }</code> — fired when an item is chosen; panel closes.</span></div>
-        </div>
-      </section>
     </div>
   `
 }
@@ -739,7 +636,7 @@ function renderMenuPage() {
       <section class="demo-section">
         <h2 class="section-title">Use cases</h2>
         <p class="section-desc">
-          Use <code>app-menu</code> for persistent app navigation in a sidebar: main nav items, optional footer items (e.g. Settings), and nested groups. Enable <code>searchable</code> when the list is long; use <code>collapsed</code> for an icon-only rail that expands on hover. For contextual action menus (e.g. row actions, toolbar dropdowns), use <code>app-dropdown-button</code> instead.
+          Use <code>app-menu</code> for persistent app navigation in a sidebar: main nav items, optional footer items (e.g. Settings), and nested groups. Enable <code>searchable</code> when the list is long; use <code>collapsed</code> for an icon-only rail that expands on hover. For contextual action menus (e.g. row actions, toolbar dropdowns), use <code>app-dropdown-button</code> instead (currently disabled).
         </p>
       </section>
 
